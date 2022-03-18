@@ -17,10 +17,12 @@ namespace WorkerServiceEmail.Email
         }
         public async Task<bool> SendEmailAsync(MessageEmail message)
         {
+            _runner.InfoAction("Начало отправки письма");
+
             var emailMessage = new MimeMessage();
 
             emailMessage.From.Add(new MailboxAddress(message.NameFrom, message.EmailFrom));
-            emailMessage.To.Add(new MailboxAddress(message.NameTo, message.EmailFrom));
+            emailMessage.To.Add(new MailboxAddress(message.NameTo, message.EmailTo));
             emailMessage.Subject = message.Subject;
             emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
             {
@@ -28,9 +30,9 @@ namespace WorkerServiceEmail.Email
             };
 
             // Использование SMTP Service и их резервных вариатов.
-            var res = _smtpClientGoogleAsync.SendAsync(emailMessage);
+            var res = await _smtpClientGoogleAsync.SendAsync(emailMessage);
             
-            if (!res.Result)
+            if (!res)
             {
                 _runner.WarningAction("Письмо с SMTP Google не отправилось");
                 var res1 = new SmtpClientYandexAsync(emailMessage);
@@ -44,7 +46,7 @@ namespace WorkerServiceEmail.Email
 
             _runner.WarningAction("Письмо отправлено");
 
-            return res.Result;
+            return res;
         }
     }
 }
