@@ -1,16 +1,19 @@
 ﻿using MimeKit;
 using WorkerServiceEmail.Email.SMTP.Client;
 using WorkerServiceEmail.EntityMessage;
+using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Email
 {
     public class EmailService : IEmailService
     {
         private readonly ISmtpClientGoogleAsync _smtpClientGoogleAsync;
+        private readonly IRunner _runner;
 
-        public EmailService(ISmtpClientGoogleAsync smtpClientGoogleAsync)
+        public EmailService(ISmtpClientGoogleAsync smtpClientGoogleAsync,IRunner runner)
         {
             _smtpClientGoogleAsync = smtpClientGoogleAsync;
+            _runner = runner;
         }
         public async Task<bool> SendEmailAsync(MessageEmail message)
         {
@@ -26,16 +29,21 @@ namespace WorkerServiceEmail.Email
 
             // Использование SMTP Service и их резервных вариатов.
             var res = _smtpClientGoogleAsync.SendAsync(emailMessage);
-
+            
             if (!res.Result)
             {
+                _runner.WarningAction("Письмо с SMTP Google не отправилось");
                 var res1 = new SmtpClientYandexAsync(emailMessage);
+
                 if (!res1.SendAsync().Result)
                 {
                     throw new Exception("Ошибка отправки через все варианты SMTP Client");
                 }
                 return res1.SendAsync().Result;
             }
+
+            _runner.WarningAction("Письмо отправлено");
+
             return res.Result;
         }
     }

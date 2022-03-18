@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorkerServiceEmail.Infrastructure.Logging
 {
-    public class Runner
+    public class Runner : IRunner
     {
         private readonly ILogger<Runner> _logger;
 
