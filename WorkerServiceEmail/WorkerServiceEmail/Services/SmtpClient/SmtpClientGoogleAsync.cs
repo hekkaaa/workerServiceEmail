@@ -12,7 +12,7 @@ namespace WorkerServiceEmail.Email.SMTP.Client
                 using (var client = new SmtpClient())
                 {
                     await client.ConnectAsync("smtp.gmail.com", 25, false);
-                    await client.AuthenticateAsync("dogsitterclub2022@gmail.com", "devedu2022!");
+                    await client.AuthenticateAsync("@gmail.com", "!");
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
                     return true;
