@@ -37,7 +37,7 @@ namespace WorkerServiceEmail.Email
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
                 await client.ConnectAsync("smtp.gmail.com", 25, false);
-                await client.AuthenticateAsync("dogsitterclub2022@gmail.com", "devedu2022!");
+                await client.AuthenticateAsync("@gmail.com", "!");
                 await client.SendAsync(emailMessage);
                 await client.DisconnectAsync(true);
             }
