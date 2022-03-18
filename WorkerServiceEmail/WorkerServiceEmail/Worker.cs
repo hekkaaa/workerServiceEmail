@@ -10,29 +10,16 @@ namespace WorkerServiceEmail
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly Runner _runner;
+        private readonly IRunner _runner;
+        private readonly IEmailService _emailService;
 
-        public Worker(ILogger<Worker> logger)
+        public Worker(ILogger<Worker> logger, IRunner runner, IEmailService emailService)
            
         {
             _logger = logger;
+            _runner = runner;
+            _emailService = emailService;
 
-            var config = new ConfigurationBuilder()
-              .SetBasePath(System.IO.Directory.GetCurrentDirectory()) //From NuGet Package Microsoft.Extensions.Configuration.Json
-              .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-              .Build();
-
-            using var servicesProvider = new ServiceCollection()
-                .AddTransient<Runner>() // Runner is the custom class
-                .AddLogging(loggingBuilder =>
-                {
-                    // configure Logging with NLog
-                    loggingBuilder.ClearProviders();
-                    loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-                    loggingBuilder.AddNLog(config);
-                }).BuildServiceProvider();
-
-            _runner = servicesProvider.GetRequiredService<Runner>();
         }
 
         public override async Task StartAsync(CancellationToken stoppingToken)
@@ -41,7 +28,17 @@ namespace WorkerServiceEmail
 
             _runner.WarningAction("Service Email Get Started!");
 
-            new TestSendMail().SendEmailAsync(); // Письмо о старте сервиса.
+            MessageEmail startMessage = new MessageEmail
+            {
+                EmailFrom = "dogsitterclub2022@gmail.com",
+                NameFrom = "Daemon Start Service",
+                EmailTo = "silencemyalise@gmail.com",
+                NameTo = "Administrator Service",
+                Subject = "Service Email Alert!",
+                MessageText = "Service Email from Windows Server Ip: 1.1.1.1 - Successfully launched!"
+            };
+            await _emailService.SendEmailAsync(startMessage);
+            //new TestSendMail(_logger, _runner).SendEmailAsync(); // Письмо о старте сервиса.
 
             ExecuteAsync(stoppingToken).Wait();
         }

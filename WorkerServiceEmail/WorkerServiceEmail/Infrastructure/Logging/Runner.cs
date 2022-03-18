@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorkerServiceEmail.Infrastructure.Logging
 {
-    public class Runner
+    public class Runner : IRunner
     {
         private readonly ILogger<Runner> _logger;
 
@@ -27,12 +27,12 @@ namespace WorkerServiceEmail.Infrastructure.Logging
 
         public void InfoAction(string name)
         {
-            _logger.LogWarning(20, "MESSAGE:  {Action}", name);
+            _logger.LogInformation(20, "MESSAGE:  {Action}", name);
         }
 
         public void CriticalAction(string name)
         {
-            _logger.LogWarning(20, "MESSAGE:  {Action}", name);
+            _logger.LogCritical(20, "MESSAGE:  {Action}", name);
         }
     }
 }
