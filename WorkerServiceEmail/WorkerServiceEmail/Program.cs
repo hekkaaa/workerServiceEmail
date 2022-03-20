@@ -5,15 +5,14 @@ using WorkerServiceEmail.Email.SMTP.Client;
 using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 
-
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {   
         var config = new ConfigurationBuilder()
-              .SetBasePath(System.IO.Directory.GetCurrentDirectory()) //From NuGet Package Microsoft.Extensions.Configuration.Json
+              .SetBasePath(System.IO.Directory.GetCurrentDirectory())
               .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
               .Build();
-
+      
         services.AddHostedService<Worker>();
         services.AddSingleton<IRunner, Runner>()
         .AddLogging(loggingBuilder =>
@@ -25,7 +24,6 @@ IHost host = Host.CreateDefaultBuilder(args)
         });
         services.AddSingleton<IEmailService, EmailService>();
         services.AddSingleton<ISmtpClientGoogleAsync, SmtpClientGoogleAsync>();
-
     })
     .Build();
 

@@ -12,19 +12,18 @@ namespace WorkerServiceEmail
         private readonly ILogger<Worker> _logger;
         private readonly IRunner _runner;
         private readonly IEmailService _emailService;
+        readonly string? _userDirectory = Environment.GetEnvironmentVariable("LOG_DIRECTORY");
 
         public Worker(ILogger<Worker> logger, IRunner runner, IEmailService emailService)
-           
         {
             _logger = logger;
             _runner = runner;
             _emailService = emailService;
-
         }
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            Console.WriteLine("Start");
+            await CheckFileLog.CheckFileForSystem(_userDirectory, _emailService);
 
             _runner.WarningAction("Service Email Get Started!");
 
@@ -35,10 +34,11 @@ namespace WorkerServiceEmail
                 EmailTo = "silencemyalise@gmail.com",
                 NameTo = "Administrator Service",
                 Subject = "Service Email Alert!",
-                MessageText = "Service Email from Windows Server Ip: 1.1.1.1 - Successfully launched!"
+                MessageText = "<b>Service Email from Windows Server</b><br>" +
+                "<b>IP:</b> 1.1.1.1 - Successfully launched!"
             };
-            await _emailService.SendEmailAsync(startMessage);
-            //new TestSendMail(_logger, _runner).SendEmailAsync(); // Письмо о старте сервиса.
+            
+            //await _emailService.SendEmailAsync(startMessage);
 
             ExecuteAsync(stoppingToken).Wait();
         }
@@ -67,8 +67,9 @@ namespace WorkerServiceEmail
         }
 
         public override async Task StopAsync(CancellationToken stoppingToken)
-        {
-            Console.WriteLine("Stop");
+        {   
+
+            _runner.WarningAction("Service Email Stopped!");
 
             await base.StopAsync(stoppingToken);
         }

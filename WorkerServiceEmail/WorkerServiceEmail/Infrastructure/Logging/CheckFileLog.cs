@@ -1,38 +1,120 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using NLog;
+using WorkerServiceEmail.Email;
+using WorkerServiceEmail.EntityMessage;
 
 namespace WorkerServiceEmail.Infrastructure
 {
     public class CheckFileLog
-    {  
-        public static bool CheckFile()
+    {
+        static FileStream? _createfile;
+        static string _userDirectory = String.Empty;
+        public static async Task<Task> CheckFileForSystem(string? userDirectory, IEmailService emailService)
         {
-            // проверка на есть ли файл для логирования.
+            _userDirectory = userDirectory;
 
+            // Check files.
             try
             {
-                string userDirectory = Directory.GetCurrentDirectory();
-                var trs = Directory.GetFiles($@"{userDirectory}\EmailServiceLog.log");
-                return true;
+                var res = CheckFileLogFromDirectory();
+                if (res) return Task.CompletedTask;
             }
-            catch (DirectoryNotFoundException)
+            catch (Exception ex)
             {
                 try
                 {
-                    File.Create("EmailServiceLog.log");
-                    return true;
+                    ReBasePathFileNlog();
+                    _userDirectory = @"C:\Temp\";
+                    var res = CheckFileLogFromDirectory();
+
+                    if (res)
+                    {
+                        MessageEmail messageReabase = new MessageEmail
+                        {
+                            EmailFrom = "dogsitterclub2022@gmail.com",
+                            NameFrom = "Daemon Start Service",
+                            EmailTo = "silencemyalise@gmail.com",
+                            NameTo = "Administrator Service",
+                            Subject = "Service Email Alert!",
+                            MessageText = "<b>Logs are written on the backup path!</b><br>" +
+                             $"<b>New folder path:</b> C:\\Temp<br>" +
+                             $"<b>Exception text:</b> {ex.Message}"
+                        };
+
+                        await emailService.SendEmailAsync(messageReabase);
+
+                        return Task.CompletedTask;
+                    }
                 }
-                catch (Exception ex)
+                catch
                 {
-                    throw new Exception(); // заглушка. Удалю позднее.
-                    // Тут будет отправка письма админа о том что файл логов не создался и записи не идут.
+                    LogManager.DisableLogging();
+
+                    MessageEmail message = new MessageEmail
+                    {
+                        EmailFrom = "dogsitterclub2022@gmail.com",
+                        NameFrom = "Daemon Start Service",
+                        EmailTo = "silencemyalise@gmail.com",
+                        NameTo = "Administrator Service",
+                        Subject = "Service Email Alert!",
+                        MessageText = "<h2><b>Log file existence check error!</b></h2><br>" +
+                        "!!!!Logging is completely disabled!!!<br>" +
+                        "<b>Server:</b 1.1.1.1<br>" +
+                         $"<b>Exception text:</b> {ex.Message}"
+                    };
+
+                    await emailService.SendEmailAsync(message);
+
+                    return Task.CompletedTask;
                 }
+            }
+
+            // Create log file.
+            try
+            {
+                _createfile = File.Create("EmailServiceLog.log");
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {
+                MessageEmail message = new MessageEmail
+                {
+                    EmailFrom = "dogsitterclub2022@gmail.com",
+                    NameFrom = "Daemon Start Service",
+                    EmailTo = "silencemyalise@gmail.com",
+                    NameTo = "Administrator Service",
+                    Subject = "Service Email Alert!",
+                    MessageText = "<b>Error creating log file</b><br>" +
+                    $"<b>Check Folder path:</b> {userDirectory}<br>" +
+                    $"<b>The name of the file to be created:</b> {_createfile.Name}<br>" +
+                    $"<b>Exception text:</b> {ex.Message}"
+                };
+
+                await emailService.SendEmailAsync(message);
+                return Task.CompletedTask;
             }
         }
 
-     
+        private static void ReBasePathFileNlog()
+        {   
+            LogManager.LoadConfiguration("nlog_reserve.config");
+        }
+
+        private static bool CheckFileLogFromDirectory()
+        {
+            try
+            {
+                string[] dirs = Directory.GetFiles($@"{_userDirectory}", "EmailServiceLog.log");
+
+                if (dirs.Length > 0)
+                {
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
     }
 }
