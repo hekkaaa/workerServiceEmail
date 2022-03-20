@@ -37,8 +37,8 @@ namespace WorkerServiceEmail
                 MessageText = "<b>Service Email from Windows Server</b><br>" +
                 "<b>IP:</b> 1.1.1.1 - Successfully launched!"
             };
-
-            await _emailService.SendEmailAsync(startMessage);
+            
+            //await _emailService.SendEmailAsync(startMessage);
 
             ExecuteAsync(stoppingToken).Wait();
         }

@@ -6,7 +6,6 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
         "LOG_DIRECTORY": "D:/NewTemp"
-
       }
     }
   }
