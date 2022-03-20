@@ -23,8 +23,8 @@ namespace WorkerServiceEmail
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            string userDirectory = Directory.GetCurrentDirectory();
-            await CheckFileLog.CheckFileForSystem(_userDirectory);
+            await CheckFileLog.CheckFileForSystem(_userDirectory, _emailService);
+
             _runner.WarningAction("Service Email Get Started!");
 
             MessageEmail startMessage = new MessageEmail
@@ -34,10 +34,11 @@ namespace WorkerServiceEmail
                 EmailTo = "silencemyalise@gmail.com",
                 NameTo = "Administrator Service",
                 Subject = "Service Email Alert!",
-                MessageText = "Service Email from Windows Server Ip: 1.1.1.1 - Successfully launched!"
+                MessageText = "<b>Service Email from Windows Server</b><br>" +
+                "<b>IP:</b> 1.1.1.1 - Successfully launched!"
             };
-            //await _emailService.SendEmailAsync(startMessage);
-            //new TestSendMail(_logger, _runner).SendEmailAsync(); // Письмо о старте сервиса.
+
+            await _emailService.SendEmailAsync(startMessage);
 
             ExecuteAsync(stoppingToken).Wait();
         }
