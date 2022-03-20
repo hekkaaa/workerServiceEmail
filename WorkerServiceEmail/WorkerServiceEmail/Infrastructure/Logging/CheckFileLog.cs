@@ -3,36 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Infrastructure
 {
     public class CheckFileLog
-    {  
-        public static bool CheckFile()
+    {
+        public static Task CheckFileForSystem(string userDirectory)
         {
-            // проверка на есть ли файл для логирования.
-
+            // Check files.
             try
             {
-                string userDirectory = Directory.GetCurrentDirectory();
-                var trs = Directory.GetFiles($@"{userDirectory}\EmailServiceLog.log");
-                return true;
+                string[] dirs = Directory.GetFiles($@"{userDirectory}", "EmailServiceLog.log");
+
+                if (dirs.Length > 0)
+                {
+                    return Task.CompletedTask;
+                }
             }
-            catch (DirectoryNotFoundException)
+            catch (Exception ex)
+            {   
+                // отправить письмо
+                return Task.CompletedTask;
+            }
+
+            // Create log file.
+            try
             {
-                try
-                {
-                    File.Create("EmailServiceLog.log");
-                    return true;
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(); // заглушка. Удалю позднее.
-                    // Тут будет отправка письма админа о том что файл логов не создался и записи не идут.
-                }
+                File.Create("EmailServiceLog.log");
+                return Task.CompletedTask;
+            }
+            catch (Exception ex)
+            {   
+                throw new Exception();
+                // заглушка. Удалю позднее.
+                // Тут будет отправка письма админа о том что файл логов не создался и записи не идут.
             }
         }
-
-     
     }
 }

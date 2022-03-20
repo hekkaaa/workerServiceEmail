@@ -4,7 +4,9 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "environmentVariables": {
-        "DOTNET_ENVIRONMENT": "Development"
+        "DOTNET_ENVIRONMENT": "Development",
+        "LOG_DIRECTORY": "D:/GitWork/workerServiceEmail/WorkerServiceEmail/WorkerServiceEmail/bin/Debug/net6.0"
+
       }
     }
   }
