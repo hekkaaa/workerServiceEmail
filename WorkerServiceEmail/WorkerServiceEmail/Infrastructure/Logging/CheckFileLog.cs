@@ -6,17 +6,37 @@ namespace WorkerServiceEmail.Infrastructure
 {
     public class CheckFileLog
     {
-        static FileStream? _createfile;
-        static string _userDirectory = String.Empty;
-        public static async Task<Task> CheckFileForSystem(string? userDirectory, IEmailService emailService)
+        static IEmailService? _emailService;
+        static string? _userDirectory = Environment.GetEnvironmentVariable("LOG_DIRECTORY");
+
+        public static async Task<Task> CheckLogFileForSystem(IEmailService emailService)
         {
-            _userDirectory = userDirectory;
-       
+            _emailService = emailService;
+
+            bool result = await CheckPresenceLogFileForSystem();
+
+            if(result is true)
+            {
+                return Task.CompletedTask;
+            }
+
+            bool resiltCreate = await CreateNewFileLog();
+
+            if (resiltCreate is true)
+            {
+                return Task.CompletedTask;
+            }
+
+            return Task.CompletedTask;
+        }
+
+        private async static Task<bool> CheckPresenceLogFileForSystem()
+        {
             // Check files.
             try
             {
                 var res = CheckFileLogFromDirectory();
-                if (res) return Task.CompletedTask;
+                if (res) return true;
             }
             catch (Exception ex)
             {
@@ -24,27 +44,24 @@ namespace WorkerServiceEmail.Infrastructure
                 {
                     ReBasePathFileNlog();
                     _userDirectory = @"C:\Temp\";
-                    var res = CheckFileLogFromDirectory();
+                    CheckFileLogFromDirectory();
 
-                    if (res)
+                    MessageEmail messageReabase = new MessageEmail
                     {
-                        MessageEmail messageReabase = new MessageEmail
-                        {
-                            EmailFrom = "dogsitterclub2022@gmail.com",
-                            NameFrom = "Daemon Start Service",
-                            EmailTo = "silencemyalise@gmail.com",
-                            NameTo = "Administrator Service",
-                            Subject = "Service Email Alert!",
-                            MessageText = "<b>Logs are written on the backup path!</b><br>" +
-                             $"<b>New folder path:</b> C:\\Temp<br>" +
-                             $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
-                             $"<b>Exception text:</b> {ex.Message}"
-                        };
+                        EmailFrom = "dogsitterclub2022@gmail.com",
+                        NameFrom = "Daemon Start Service",
+                        EmailTo = "silencemyalise@gmail.com",
+                        NameTo = "Administrator Service",
+                        Subject = "Service Email Alert!",
+                        MessageText = "<b>Logs are written on the backup path!</b><br>" +
+                            $"<b>New folder path:</b> C:\\Temp<br>" +
+                            $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
+                            $"<b>Exception text:</b> {ex.Message}"
+                    };
 
-                        await emailService.SendEmailAsync(messageReabase);
+                    await _emailService.SendEmailAsync(messageReabase);
 
-                        return Task.CompletedTask;
-                    }
+                    return true;
                 }
                 catch
                 {
@@ -63,17 +80,21 @@ namespace WorkerServiceEmail.Infrastructure
                          $"<b>Exception text:</b> {ex.Message}"
                     };
 
-                    await emailService.SendEmailAsync(message);
+                    await _emailService.SendEmailAsync(message);
 
-                    return Task.CompletedTask;
+                    return true;
                 }
             }
+            return false;
+        }
 
+        private async static Task<bool> CreateNewFileLog()
+        {
             // Create log file.
             try
             {
-                _createfile = File.Create("EmailServiceLog.log");
-                return Task.CompletedTask;
+                File.Create($"{_userDirectory}/EmailServiceLog-{DateTime.Now.ToString("dd-MM-yyyy")}.log").Dispose();
+                return true;
             }
             catch (Exception ex)
             {
@@ -85,14 +106,14 @@ namespace WorkerServiceEmail.Infrastructure
                     NameTo = "Administrator Service",
                     Subject = "Service Email Alert!",
                     MessageText = "<b>Error creating log file</b><br>" +
-                    $"<b>Check Folder path:</b> {userDirectory}<br>" +
-                    $"<b>The name of the file to be created:</b> {_createfile.Name}<br>" +
+                    $"<b>Check Folder path:</b> {_userDirectory}<br>" +
+                    $"<b>The name of the file to be created:</b> EmailServiceLog-{DateTime.Now.ToString("dd-MM-yyyy")}.log<br>" +
                     $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
                     $"<b>Exception text:</b> {ex.Message}"
                 };
 
-                await emailService.SendEmailAsync(message);
-                return Task.CompletedTask;
+                await _emailService.SendEmailAsync(message);
+                return true;
             }
         }
 

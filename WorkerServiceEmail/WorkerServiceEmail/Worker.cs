@@ -10,7 +10,7 @@ namespace WorkerServiceEmail
         private readonly ILogger<Worker> _logger;
         private readonly IRunner _runner;
         private readonly IEmailService _emailService;
-        readonly string? _userDirectory = Environment.GetEnvironmentVariable("LOG_DIRECTORY");
+      
 
         public Worker(ILogger<Worker> logger, IRunner runner, IEmailService emailService)
         {
@@ -21,7 +21,7 @@ namespace WorkerServiceEmail
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            await CheckFileLog.CheckFileForSystem(_userDirectory, _emailService);
+            await CheckFileLog.CheckLogFileForSystem(_emailService);
 
             _runner.WarningAction("Service Email Get Started!");
 
