@@ -112,7 +112,9 @@ namespace WorkerServiceEmail.Infrastructure
                     $"<b>Exception text:</b> {ex.Message}"
                 };
 
+                LogManager.DisableLogging();
                 await _emailService.SendEmailAsync(message);
+
                 return true;
             }
         }
