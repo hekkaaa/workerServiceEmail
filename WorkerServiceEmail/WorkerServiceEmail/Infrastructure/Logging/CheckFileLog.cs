@@ -11,7 +11,7 @@ namespace WorkerServiceEmail.Infrastructure
         public static async Task<Task> CheckFileForSystem(string? userDirectory, IEmailService emailService)
         {
             _userDirectory = userDirectory;
-
+         
             // Check files.
             try
             {
@@ -103,7 +103,8 @@ namespace WorkerServiceEmail.Infrastructure
         {
             try
             {
-                string[] dirs = Directory.GetFiles($@"{_userDirectory}", "EmailServiceLog.log");
+                var currentDate = DateTime.Now.ToString("dd-MM-yyyy");
+                string[] dirs = Directory.GetFiles($@"{_userDirectory}", $"EmailServiceLog-{currentDate}.log");
 
                 if (dirs.Length > 0)
                 {
