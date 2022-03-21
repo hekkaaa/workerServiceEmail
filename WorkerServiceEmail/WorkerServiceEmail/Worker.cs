@@ -1,6 +1,4 @@
-using NLog.Extensions.Logging;
 using WorkerServiceEmail.Email;
-using WorkerServiceEmail.Email.SMTP.Client;
 using WorkerServiceEmail.EntityMessage;
 using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
@@ -35,10 +33,10 @@ namespace WorkerServiceEmail
                 NameTo = "Administrator Service",
                 Subject = "Service Email Alert!",
                 MessageText = "<b>Service Email from Windows Server</b><br>" +
-                "<b>IP:</b> 1.1.1.1 - Successfully launched!"
+                $"<b>IP:</b> {GetIpAddresHost.GetIpThisHost()} - Successfully launched!"
             };
-            
-            //await _emailService.SendEmailAsync(startMessage);
+
+            await _emailService.SendEmailAsync(startMessage);
 
             ExecuteAsync(stoppingToken).Wait();
         }
@@ -46,30 +44,40 @@ namespace WorkerServiceEmail
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
-            {   
+            {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
                 // суд€ по всему тут будут слушатьс€ RabbitMQ
                 try
-                {   
+                {
                     // ѕришло сообщение 
-
-                    //var res = new EmailService().SendEmailAsync("test", "silencemyalise@gmail.com", "Test Asych", "Hellow here text");
-                    //Console.WriteLine($"Result: {res.Result}");
                 }
                 catch (Exception ex)
                 {
                     Console.WriteLine(ex.Message);
                 }
-                
+
                 await Task.Delay(5000, stoppingToken);
             }
         }
 
         public override async Task StopAsync(CancellationToken stoppingToken)
-        {   
+        {
 
             _runner.WarningAction("Service Email Stopped!");
+
+            MessageEmail startMessage = new MessageEmail
+            {
+                EmailFrom = "dogsitterclub2022@gmail.com",
+                NameFrom = "Daemon Start Service",
+                EmailTo = "silencemyalise@gmail.com",
+                NameTo = "Administrator Service",
+                Subject = "Service Email Alert!",
+                MessageText = "<b>Service Email from Windows Server</b><br>" +
+             $"<b>IP:</b> {GetIpAddresHost.GetIpThisHost()} - Service stopped!"
+            };
+
+            await _emailService.SendEmailAsync(startMessage);
 
             await base.StopAsync(stoppingToken);
         }

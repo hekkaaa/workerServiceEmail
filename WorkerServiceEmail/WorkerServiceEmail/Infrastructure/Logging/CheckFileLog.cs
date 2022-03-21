@@ -11,7 +11,7 @@ namespace WorkerServiceEmail.Infrastructure
         public static async Task<Task> CheckFileForSystem(string? userDirectory, IEmailService emailService)
         {
             _userDirectory = userDirectory;
-         
+       
             // Check files.
             try
             {
@@ -37,6 +37,7 @@ namespace WorkerServiceEmail.Infrastructure
                             Subject = "Service Email Alert!",
                             MessageText = "<b>Logs are written on the backup path!</b><br>" +
                              $"<b>New folder path:</b> C:\\Temp<br>" +
+                             $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
                              $"<b>Exception text:</b> {ex.Message}"
                         };
 
@@ -58,7 +59,7 @@ namespace WorkerServiceEmail.Infrastructure
                         Subject = "Service Email Alert!",
                         MessageText = "<h2><b>Log file existence check error!</b></h2><br>" +
                         "!!!!Logging is completely disabled!!!<br>" +
-                        "<b>Server:</b 1.1.1.1<br>" +
+                        $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
                          $"<b>Exception text:</b> {ex.Message}"
                     };
 
@@ -86,6 +87,7 @@ namespace WorkerServiceEmail.Infrastructure
                     MessageText = "<b>Error creating log file</b><br>" +
                     $"<b>Check Folder path:</b> {userDirectory}<br>" +
                     $"<b>The name of the file to be created:</b> {_createfile.Name}<br>" +
+                    $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
                     $"<b>Exception text:</b> {ex.Message}"
                 };
 

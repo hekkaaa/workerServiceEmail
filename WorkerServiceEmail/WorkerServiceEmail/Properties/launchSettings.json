@@ -5,7 +5,11 @@
       "dotnetRunMessages": true,
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
-        "LOG_DIRECTORY": "D:/NewTemp"
+        "LOG_DIRECTORY": "D:/NewTemp",
+        "LOGIN_EMAIL_GMAIL": "",
+        "PASSWORD_EMAIL_GMAIL": "",
+        "LOGIN_EMAIL_YANDEX": "",
+        "PASSWORD_EMAIL_YANDEX": ""
       }
     }
   }
