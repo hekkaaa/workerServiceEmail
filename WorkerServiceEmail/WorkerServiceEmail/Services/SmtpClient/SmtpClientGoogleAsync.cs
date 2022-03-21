@@ -7,6 +7,8 @@ namespace WorkerServiceEmail.Email.SMTP.Client
     public class SmtpClientGoogleAsync : ISmtpClientGoogleAsync
     {
         private readonly IRunner _runner;
+        private string? _login =  Environment.GetEnvironmentVariable("LOGIN_EMAIL_GMAIL");
+        private string? _password = Environment.GetEnvironmentVariable("PASSWORD_EMAIL_GMAIL");
       
         public SmtpClientGoogleAsync(IRunner runner)
         {
@@ -20,7 +22,7 @@ namespace WorkerServiceEmail.Email.SMTP.Client
                 using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     await client.ConnectAsync("smtp.gmail.com", 25, false);
-                    await client.AuthenticateAsync("dogsitterclub2022@gmail.com", "devedu2022!");
+                    await client.AuthenticateAsync(_login, _password);
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
                     _runner.WarningAction("Письмо отправилось 1111!");
