@@ -25,9 +25,8 @@ namespace WorkerServiceEmail.Email.SMTP.Client
                     await client.AuthenticateAsync(_login, _password);
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
-                    _runner.WarningAction("Письмо отправилось 1111!");
+
                     return true;
-                 
                 }
             }
             catch (Exception ex)
@@ -35,7 +34,6 @@ namespace WorkerServiceEmail.Email.SMTP.Client
                 _runner.CriticalAction("Письмо не отправилось!");
                 return false;
             }
-
         }
     }
 }

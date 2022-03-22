@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Net;
 using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WorkerServiceEmail.Infrastructure
 {
-    public class GetIpAddresHost
-    {   
+    public class IpAddressHelper
+    {
         private static List<string> _listIp = new List<string>();
 
-        public static string GetIpThisHost()
+        public static string? GetIpThisHost()
         {
             try
             {
@@ -24,7 +19,7 @@ namespace WorkerServiceEmail.Infrastructure
                 return "No information";
             }
 
-            return _listIp[0].ToString();
+            return _listIp.FirstOrDefault()?.ToString();
         }
 
         private static void AddIpWithDhcpPrefix()
@@ -33,11 +28,9 @@ namespace WorkerServiceEmail.Infrastructure
 
             foreach (NetworkInterface nic in nics)
             {
-                int indexInterfaceIPv4 = nic.GetIPProperties().UnicastAddresses.Count - 1;
-
-                if (nic.GetIPProperties().UnicastAddresses[indexInterfaceIPv4].PrefixOrigin == System.Net.NetworkInformation.PrefixOrigin.Dhcp)
+                if (nic.GetIPProperties().UnicastAddresses.FirstOrDefault()?.PrefixOrigin == System.Net.NetworkInformation.PrefixOrigin.Dhcp)
                 {
-                    IPAddress ip = nic.GetIPProperties().UnicastAddresses[indexInterfaceIPv4].Address;
+                    IPAddress? ip = nic.GetIPProperties().UnicastAddresses.FirstOrDefault()?.Address;
                     _listIp.Add(ip.ToString());
                 }
             }
@@ -49,15 +42,12 @@ namespace WorkerServiceEmail.Infrastructure
 
             foreach (NetworkInterface nic in nics)
             {
-                int indexInterfaceIPv4 = nic.GetIPProperties().UnicastAddresses.Count - 1;
-
-                if (nic.GetIPProperties().UnicastAddresses[indexInterfaceIPv4].PrefixOrigin == System.Net.NetworkInformation.PrefixOrigin.Manual)
+                if (nic.GetIPProperties().UnicastAddresses.FirstOrDefault()?.PrefixOrigin == System.Net.NetworkInformation.PrefixOrigin.Manual)
                 {
-                    IPAddress ip = nic.GetIPProperties().UnicastAddresses[indexInterfaceIPv4].Address;
+                    IPAddress? ip = nic.GetIPProperties().UnicastAddresses.FirstOrDefault()?.Address;
                     _listIp.Add(ip.ToString());
                 }
             }
         }
-
     }
 }

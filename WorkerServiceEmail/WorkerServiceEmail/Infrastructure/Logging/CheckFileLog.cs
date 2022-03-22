@@ -55,7 +55,7 @@ namespace WorkerServiceEmail.Infrastructure
                         Subject = "Service Email Alert!",
                         MessageText = "<b>Logs are written on the backup path!</b><br>" +
                             $"<b>New folder path:</b> C:\\Temp<br>" +
-                            $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
+                            $"<b>Server:</b> {IpAddressHelper.GetIpThisHost()} <br>" +
                             $"<b>Exception text:</b> {ex.Message}"
                     };
 
@@ -76,7 +76,7 @@ namespace WorkerServiceEmail.Infrastructure
                         Subject = "Service Email Alert!",
                         MessageText = "<h2><b>Log file existence check error!</b></h2><br>" +
                         "!!!!Logging is completely disabled!!!<br>" +
-                        $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
+                        $"<b>Server:</b> {IpAddressHelper.GetIpThisHost()} <br>" +
                          $"<b>Exception text:</b> {ex.Message}"
                     };
 
@@ -108,7 +108,7 @@ namespace WorkerServiceEmail.Infrastructure
                     MessageText = "<b>Error creating log file</b><br>" +
                     $"<b>Check Folder path:</b> {_userDirectory}<br>" +
                     $"<b>The name of the file to be created:</b> EmailServiceLog-{DateTime.Now.ToString("dd-MM-yyyy")}.log<br>" +
-                    $"<b>Server:</b> {GetIpAddresHost.GetIpThisHost()} <br>" +
+                    $"<b>Server:</b> {IpAddressHelper.GetIpThisHost()} <br>" +
                     $"<b>Exception text:</b> {ex.Message}"
                 };
 

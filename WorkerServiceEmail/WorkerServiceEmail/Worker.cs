@@ -33,7 +33,7 @@ namespace WorkerServiceEmail
                 NameTo = "Administrator Service",
                 Subject = "Service Email Alert!",
                 MessageText = "<b>Service Email from Windows Server</b><br>" +
-                $"<b>IP:</b> {GetIpAddresHost.GetIpThisHost()} - Successfully launched!"
+                $"<b>IP:</b> {IpAddressHelper.GetIpThisHost()} - Successfully launched!"
             };
 
             await _emailService.SendEmailAsync(startMessage);
@@ -74,7 +74,7 @@ namespace WorkerServiceEmail
                 NameTo = "Administrator Service",
                 Subject = "Service Email Alert!",
                 MessageText = "<b>Service Email from Windows Server</b><br>" +
-             $"<b>IP:</b> {GetIpAddresHost.GetIpThisHost()} - Service stopped!"
+             $"<b>IP:</b> {IpAddressHelper.GetIpThisHost()} - Service stopped!"
             };
 
             await _emailService.SendEmailAsync(startMessage);
