@@ -21,7 +21,7 @@ namespace WorkerServiceEmail.Services
             this._clientSmtp = clientSmtp;
         }
 
-        public async Task<bool> Test(MimeMessage emailMessage)
+        public async Task<bool> SendMail(MimeMessage emailMessage)
         {
             return await _clientSmtp.SendAsync(emailMessage);
         }

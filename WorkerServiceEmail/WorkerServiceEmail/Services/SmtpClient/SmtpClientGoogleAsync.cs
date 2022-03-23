@@ -1,6 +1,4 @@
 ﻿using MimeKit;
-using MailKit.Net.Smtp;
-using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Email.SMTP.Client
 {
