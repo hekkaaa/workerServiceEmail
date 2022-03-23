@@ -7,14 +7,12 @@ namespace WorkerServiceEmail
 {
     public class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
         private readonly IRunner _runner;
         private readonly IEmailService _emailService;
       
 
         public Worker(ILogger<Worker> logger, IRunner runner, IEmailService emailService)
         {
-            _logger = logger;
             _runner = runner;
             _emailService = emailService;
         }
@@ -33,7 +31,7 @@ namespace WorkerServiceEmail
                 NameTo = "Administrator Service",
                 Subject = "Service Email Alert!",
                 MessageText = "<b>Service Email from Windows Server</b><br>" +
-                $"<b>IP:</b> {GetIpAddresHost.GetIpThisHost()} - Successfully launched!"
+                $"<b>IP:</b> {IpAddressHelper.GetIpThisHost()} - Successfully launched!"
             };
 
             await _emailService.SendEmailAsync(startMessage);
@@ -45,7 +43,7 @@ namespace WorkerServiceEmail
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
 
                 // судя по всему тут будут слушаться RabbitMQ
                 try
@@ -74,7 +72,7 @@ namespace WorkerServiceEmail
                 NameTo = "Administrator Service",
                 Subject = "Service Email Alert!",
                 MessageText = "<b>Service Email from Windows Server</b><br>" +
-             $"<b>IP:</b> {GetIpAddresHost.GetIpThisHost()} - Service stopped!"
+             $"<b>IP:</b> {IpAddressHelper.GetIpThisHost()} - Service stopped!"
             };
 
             await _emailService.SendEmailAsync(startMessage);
