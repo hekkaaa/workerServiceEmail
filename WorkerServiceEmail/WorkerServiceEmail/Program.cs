@@ -22,7 +22,7 @@ IHost host = Host.CreateDefaultBuilder(args)
             loggingBuilder.AddNLog(config);
         });
         services.AddSingleton<IEmailService, EmailService>();
-        services.AddSingleton<ISmtpClientGoogleAsync, SmtpClientGoogleAsync>();
+        services.AddSingleton<IClientSmtp, SmtpClientGoogleAsync>();
     })
     .Build();
 

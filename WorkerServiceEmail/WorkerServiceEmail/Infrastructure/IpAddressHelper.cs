@@ -9,15 +9,8 @@ namespace WorkerServiceEmail.Infrastructure
 
         public static string? GetIpThisHost()
         {
-            try
-            {
-                AddIpWithDhcpPrefix();
-                AddIpWithManualPrefix();
-            }
-            catch (Exception ex)
-            {
-                return "No information";
-            }
+            AddIpWithDhcpPrefix();
+            AddIpWithManualPrefix();
 
             return _listIp.FirstOrDefault()?.ToString();
         }
@@ -28,9 +21,9 @@ namespace WorkerServiceEmail.Infrastructure
 
             foreach (NetworkInterface nic in nics)
             {
-                if (nic.GetIPProperties().UnicastAddresses.FirstOrDefault()?.PrefixOrigin == System.Net.NetworkInformation.PrefixOrigin.Dhcp)
+                if (nic.GetIPProperties().UnicastAddresses.LastOrDefault()?.PrefixOrigin == System.Net.NetworkInformation.PrefixOrigin.Dhcp)
                 {
-                    IPAddress? ip = nic.GetIPProperties().UnicastAddresses.FirstOrDefault()?.Address;
+                    IPAddress? ip = nic.GetIPProperties().UnicastAddresses.LastOrDefault()?.Address;
                     _listIp.Add(ip.ToString());
                 }
             }
@@ -42,9 +35,9 @@ namespace WorkerServiceEmail.Infrastructure
 
             foreach (NetworkInterface nic in nics)
             {
-                if (nic.GetIPProperties().UnicastAddresses.FirstOrDefault()?.PrefixOrigin == System.Net.NetworkInformation.PrefixOrigin.Manual)
+                if (nic.GetIPProperties().UnicastAddresses.LastOrDefault()?.PrefixOrigin == System.Net.NetworkInformation.PrefixOrigin.Manual)
                 {
-                    IPAddress? ip = nic.GetIPProperties().UnicastAddresses.FirstOrDefault()?.Address;
+                    IPAddress? ip = nic.GetIPProperties().UnicastAddresses.LastOrDefault()?.Address;
                     _listIp.Add(ip.ToString());
                 }
             }

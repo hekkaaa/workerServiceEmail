@@ -2,7 +2,7 @@
 
 namespace WorkerServiceEmail.Email.SMTP.Client
 {
-    public interface ISmtpClientGoogleAsync
+    public interface IClientSmtp
     {
         Task<bool> SendAsync(MimeMessage emailMessage);
     }

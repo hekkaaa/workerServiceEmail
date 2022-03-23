@@ -4,17 +4,11 @@ using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Email.SMTP.Client
 {
-    public class SmtpClientGoogleAsync : ISmtpClientGoogleAsync
+    public class SmtpClientGoogleAsync : IClientSmtp
     {
-        private readonly IRunner _runner;
-        private string? _login =  Environment.GetEnvironmentVariable("LOGIN_EMAIL_GMAIL");
+        private string? _login = Environment.GetEnvironmentVariable("LOGIN_EMAIL_GMAIL");
         private string? _password = Environment.GetEnvironmentVariable("PASSWORD_EMAIL_GMAIL");
-      
-        public SmtpClientGoogleAsync(IRunner runner)
-        {
-            _runner = runner;
 
-        }
         public async Task<bool> SendAsync(MimeMessage emailMessage)
         {
             try
@@ -31,7 +25,6 @@ namespace WorkerServiceEmail.Email.SMTP.Client
             }
             catch (Exception ex)
             {
-                _runner.CriticalAction("Письмо не отправилось!");
                 return false;
             }
         }

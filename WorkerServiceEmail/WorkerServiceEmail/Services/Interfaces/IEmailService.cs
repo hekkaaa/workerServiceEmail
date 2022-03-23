@@ -1,4 +1,5 @@
-﻿using WorkerServiceEmail.EntityMessage;
+﻿using WorkerServiceEmail.Email.SMTP.Client;
+using WorkerServiceEmail.EntityMessage;
 
 namespace WorkerServiceEmail.Email
 {

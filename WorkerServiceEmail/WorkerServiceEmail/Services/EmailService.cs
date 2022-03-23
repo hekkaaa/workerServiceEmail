@@ -2,24 +2,23 @@
 using WorkerServiceEmail.Email.SMTP.Client;
 using WorkerServiceEmail.EntityMessage;
 using WorkerServiceEmail.Infrastructure.Logging;
+using WorkerServiceEmail.Services;
 
 namespace WorkerServiceEmail.Email
 {
     public class EmailService : IEmailService
     {
-        private readonly ISmtpClientGoogleAsync _smtpClientGoogleAsync;
         private readonly IRunner _runner;
 
-        public EmailService(ISmtpClientGoogleAsync smtpClientGoogleAsync,IRunner runner)
+        public EmailService(IRunner runner)
         {
-            _smtpClientGoogleAsync = smtpClientGoogleAsync;
             _runner = runner;
         }
         public async Task<bool> SendEmailAsync(MessageEmail message)
         {
             _runner.InfoAction("Начало отправки письма");
 
-            var emailMessage = new MimeMessage();
+            MimeMessage emailMessage = new MimeMessage();
 
             emailMessage.From.Add(new MailboxAddress(message.NameFrom, message.EmailFrom));
             emailMessage.To.Add(new MailboxAddress(message.NameTo, message.EmailTo));
@@ -29,24 +28,23 @@ namespace WorkerServiceEmail.Email
                 Text = message.MessageText
             };
 
-            // Использование SMTP Service и их резервных вариатов.
-            var res = await _smtpClientGoogleAsync.SendAsync(emailMessage);
-            
-            if (!res)
-            {
-                _runner.WarningAction("Письмо с SMTP Google не отправилось");
-                var res1 = new SmtpClientYandexAsync(emailMessage);
+            ContextEmailService context = new ContextEmailService();
+            context.SetClientSmtp(new SmtpClientGoogleAsync());
+            Task<bool> res = context.Test(emailMessage);
 
-                if (!res1.SendAsync().Result)
+            if (!res.Result)
+            {
+                context.SetClientSmtp(new SmtpClientYandexAsync());
+                res = context.Test(emailMessage);
+                if (!res.Result)
                 {
                     throw new Exception("Ошибка отправки через все варианты SMTP Client");
                 }
-                return res1.SendAsync().Result;
             }
 
             _runner.WarningAction("Письмо отправлено");
 
-            return res;
+             return res.Result;
         }
     }
 }

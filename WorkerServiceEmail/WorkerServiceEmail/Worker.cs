@@ -7,14 +7,12 @@ namespace WorkerServiceEmail
 {
     public class Worker : BackgroundService
     {
-        private readonly ILogger<Worker> _logger;
         private readonly IRunner _runner;
         private readonly IEmailService _emailService;
       
 
         public Worker(ILogger<Worker> logger, IRunner runner, IEmailService emailService)
         {
-            _logger = logger;
             _runner = runner;
             _emailService = emailService;
         }
@@ -45,7 +43,7 @@ namespace WorkerServiceEmail
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
 
                 // судя по всему тут будут слушаться RabbitMQ
                 try
