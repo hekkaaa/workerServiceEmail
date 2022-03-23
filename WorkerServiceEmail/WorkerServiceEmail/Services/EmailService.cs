@@ -18,24 +18,16 @@ namespace WorkerServiceEmail.Email
         {
             _runner.InfoAction("Начало отправки письма");
 
-            MimeMessage emailMessage = new MimeMessage();
-
-            emailMessage.From.Add(new MailboxAddress(message.NameFrom, message.EmailFrom));
-            emailMessage.To.Add(new MailboxAddress(message.NameTo, message.EmailTo));
-            emailMessage.Subject = message.Subject;
-            emailMessage.Body = new TextPart(MimeKit.Text.TextFormat.Html)
-            {
-                Text = message.MessageText
-            };
-
+            MimeMessage emailMessage = new MessageEmail().CollectMessage(message);
+         
             ContextEmailService context = new ContextEmailService();
             context.SetClientSmtp(new SmtpClientGoogleAsync());
-            Task<bool> res = context.Test(emailMessage);
+            Task<bool> res = context.SendMail(emailMessage);
 
             if (!res.Result)
             {
                 context.SetClientSmtp(new SmtpClientYandexAsync());
-                res = context.Test(emailMessage);
+                res = context.SendMail(emailMessage);
                 if (!res.Result)
                 {
                     throw new Exception("Ошибка отправки через все варианты SMTP Client");
