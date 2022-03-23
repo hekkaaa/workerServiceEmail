@@ -19,7 +19,7 @@ namespace WorkerServiceEmail
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            await CheckFileLog.CheckLogFileForSystem(_emailService);
+            await CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService);
 
             _runner.WarningAction("Service Email Get Started!");
 

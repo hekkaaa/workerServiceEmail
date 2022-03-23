@@ -4,7 +4,7 @@ using WorkerServiceEmail.EntityMessage;
 
 namespace WorkerServiceEmail.Infrastructure
 {
-    public class CheckFileLog
+    public class CheckingPreparationLogToWork
     {
         static IEmailService? _emailService;
         static string? _userDirectory = Environment.GetEnvironmentVariable("LOG_DIRECTORY");
