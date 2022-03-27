@@ -3,6 +3,7 @@ using WorkerServiceEmail;
 using WorkerServiceEmail.Email;
 using WorkerServiceEmail.Email.SMTP.Client;
 using WorkerServiceEmail.Infrastructure.Logging;
+using WorkerServiceEmail.Services;
 
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
@@ -23,6 +24,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         });
         services.AddSingleton<IEmailService, EmailService>();
         services.AddSingleton<IClientSmtp, SmtpClientGoogleAsync>();
+        services.AddSingleton<IStartingSubService, StartingSubService>();
     })
     .Build();
 
