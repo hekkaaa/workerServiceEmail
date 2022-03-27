@@ -14,13 +14,19 @@ namespace WorkerServiceEmail
         private readonly IRunner _runner;
         private readonly IEmailService _emailService;
         private readonly IStartingSubService _startingSubService;
-      
+        private readonly IRabbitReceiveService _rabbitReceiveService;
 
-        public Worker(ILogger<Worker> logger, IRunner runner, IEmailService emailService, IStartingSubService startingSubService)
+
+        public Worker(ILogger<Worker> logger,
+            IRunner runner,
+            IEmailService emailService,
+            IStartingSubService startingSubService,
+            IRabbitReceiveService rabbitReceiveService)
         {
             _runner = runner;
             _emailService = emailService;
             _startingSubService = startingSubService;
+            _rabbitReceiveService = rabbitReceiveService;
         }
 
         public override async Task StartAsync(CancellationToken stoppingToken)
@@ -45,52 +51,9 @@ namespace WorkerServiceEmail
                 _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
 
                 // судя по всему тут будут слушаться RabbitMQ
-                try
-                {
-                    var factory = new ConnectionFactory() { HostName = "localhost" };
-                    using (var connection = factory.CreateConnection())
-                    using (var channel = connection.CreateModel())
-                    {
-                        channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
-                        channel.QueueDeclare(queue: "test-que-1",
-                                             durable: true,
-                                             exclusive: false,
-                                             autoDelete: false,
-                                             arguments: null);
+                _rabbitReceiveService.Recevie();
 
-                        var consumer = new EventingBasicConsumer(channel);
-                        consumer.Received += (model, ea) =>
-                        {
-                            var body = ea.Body.ToArray();
-                            var message = Encoding.UTF8.GetString(body);
-                            Console.WriteLine(" [x] Received {0}", message);
-
-
-                            MessageEmail infomessage = new MessageEmail
-                            {
-                                EmailFrom = "dogsitterclub2022@gmail.com",
-                                NameFrom = "Daemon Start Service",
-                                EmailTo = "silencemyalise@gmail.com",
-                                NameTo = "Administrator Service",
-                                Subject = "Service Email Alert!",
-                                MessageText = "<b>message from rabbitMQ</b><br>" +
-                                 $"<b> {message} </b>"
-                            };
-                            _emailService.SendEmailAsync(infomessage);
-                        };
-                        channel.BasicConsume(queue: "test-que-1",
-                                             autoAck: true,
-                                             consumer: consumer);
-                        Console.WriteLine(" Press [enter] to exit.");
-                        Console.ReadLine();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine(ex.Message);
-                }
-
-                await Task.Delay(2000, stoppingToken);
+                 await Task.Delay(2000, stoppingToken);
             }
         }
 

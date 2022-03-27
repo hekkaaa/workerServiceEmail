@@ -25,6 +25,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IEmailService, EmailService>();
         services.AddSingleton<IClientSmtp, SmtpClientGoogleAsync>();
         services.AddSingleton<IStartingSubService, StartingSubService>();
+        services.AddSingleton<IRabbitReceiveService, RabbitReceiveService>();
     })
     .Build();
 
