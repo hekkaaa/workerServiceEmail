@@ -1,8 +1,7 @@
 ﻿using WorkerServiceEmail.Email;
+using WorkerServiceEmail.Email.SMTP.Client;
 using WorkerServiceEmail.EntityMessage;
 using WorkerServiceEmail.Infrastructure.Logging;
-using WorkerServiceEmail.Services.ClientSmtp;
-using WorkerServiceEmail.Services.Context;
 
 namespace WorkerServiceEmail.Services
 {
@@ -19,12 +18,12 @@ namespace WorkerServiceEmail.Services
         public async Task<bool> Start()
         {
             List<OutputStatusSmtp> outputList = new List<OutputStatusSmtp>();
-            ContextStartingSubService item = new ContextStartingSubService();
+            ContextEmailService item = new ContextEmailService();
 
-            item.SetClientSmtp(new SmtpClientGoogleStatusConnectAsync());
+            item.SetClientSmtp(new SmtpClientGoogleAsync());
             outputList.Add(await item.StatusConnect());
 
-            item.SetClientSmtp(new SmtpClientYandexStatusConnectAsync());
+            item.SetClientSmtp(new SmtpClientYandexAsync());
             outputList.Add(await item.StatusConnect());
 
 
@@ -55,6 +54,7 @@ namespace WorkerServiceEmail.Services
             }
             else
             {
+                _runner.CriticalAction("Все сервисы отпраки писем SMTP не доступны!");
                 return false;
             }
         }

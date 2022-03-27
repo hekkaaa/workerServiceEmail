@@ -1,6 +1,7 @@
 ﻿using NLog;
 using WorkerServiceEmail.Email;
 using WorkerServiceEmail.EntityMessage;
+using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Infrastructure
 {
@@ -8,10 +9,12 @@ namespace WorkerServiceEmail.Infrastructure
     {
         static IEmailService? _emailService;
         static string? _userDirectory = Environment.GetEnvironmentVariable("LOG_DIRECTORY");
+        static IRunner _runner;
 
-        public static async Task<Task> CheckLogFileForSystem(IEmailService emailService)
+        public static async Task<Task> CheckLogFileForSystem(IEmailService emailService,IRunner runner)
         {
             _emailService = emailService;
+            _runner = runner;
 
             bool result = await CheckPresenceLogFileForSystem();
 
@@ -36,7 +39,11 @@ namespace WorkerServiceEmail.Infrastructure
             try
             {
                 var res = CheckFileLogFromDirectory();
-                if (res) return true;
+                if (res)
+                {
+                    _runner.InfoAction("Пути сохранения логов успешно проверены.");
+                    return true;
+                }
             }
             catch (Exception ex)
             {
@@ -58,7 +65,7 @@ namespace WorkerServiceEmail.Infrastructure
                             $"<b>Server:</b> {IpAddressHelper.GetIpThisHost()} <br>" +
                             $"<b>Exception text:</b> {ex.Message}"
                     };
-
+                    _runner.WarningAction($"Проблема пути сохранения логов. Путь {_userDirectory} не доступен");
                     await _emailService.SendEmailAsync(messageReabase);
 
                     return true;

@@ -16,26 +16,26 @@ namespace WorkerServiceEmail.Email
         }
         public async Task<bool> SendEmailAsync(MessageEmail message)
         {
-            _runner.InfoAction("Начало отправки письма");
+            _runner.InfoAction($"Начало отправки письма: {message.EmailTo}");
 
             MimeMessage emailMessage = new MessageEmail().CollectMessage(message);
 
             var result = await RouteAndSendMessageInSmptClient(emailMessage);
 
-            _runner.WarningAction("Письмо отправлено");
+            _runner.WarningAction($"Письмо отправлено {message.EmailTo}");
 
              return result;
         }
 
         public async Task<bool> SendEmailStatusSubServiceAsync(MessageEmail message, List<OutputStatusSmtp> messageService)
         {
-            _runner.InfoAction("Начало отправки письма");
+            _runner.InfoAction($"Начало отправки письма: {message.EmailTo}");
 
             MimeMessage emailMessage = new MessageEmail().CollectMessage(message, messageService);
 
             var result = await RouteAndSendMessageInSmptClient(emailMessage);
 
-            _runner.WarningAction("Письмо отправлено");
+            _runner.WarningAction($"Письмо отправлено: {message.EmailTo}");
 
             return result;
         }
@@ -52,7 +52,8 @@ namespace WorkerServiceEmail.Email
                 res = context.SendMail(emailMessage);
                 if (!res.Result)
                 {
-                    throw new Exception("Ошибка отправки через все варианты SMTP Client");
+                    _runner.CriticalAction("Ошибка отправки через все варианты SMTP Client");
+                    //throw new Exception("Ошибка отправки через все варианты SMTP Client");
                 }
             }
             return res.Result;

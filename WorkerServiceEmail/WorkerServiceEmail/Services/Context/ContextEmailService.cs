@@ -1,5 +1,6 @@
 ﻿using MimeKit;
 using WorkerServiceEmail.Email.SMTP.Client;
+using WorkerServiceEmail.EntityMessage;
 
 namespace WorkerServiceEmail.Services
 {
@@ -24,6 +25,10 @@ namespace WorkerServiceEmail.Services
         public async Task<bool> SendMail(MimeMessage emailMessage)
         {
             return await _clientSmtp.SendAsync(emailMessage);
+        }
+        public async Task<OutputStatusSmtp> StatusConnect()
+        {
+            return await _clientSmtp.StatusSmtpConnectAsync();
         }
     }
 }

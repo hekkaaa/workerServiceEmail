@@ -25,7 +25,7 @@ namespace WorkerServiceEmail
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            await CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService);
+            await CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner);
 
             _runner.WarningAction("Service Email Get Started!");
           
@@ -110,9 +110,11 @@ namespace WorkerServiceEmail
              $"<b>IP:</b> {IpAddressHelper.GetIpThisHost()} - Service stopped!"
             };
 
+            Console.WriteLine("Остановить Сервер");
             await _emailService.SendEmailAsync(startMessage);
-
             await base.StopAsync(stoppingToken);
+            NLog.LogManager.DisableLogging();
+
         }
     }
 }

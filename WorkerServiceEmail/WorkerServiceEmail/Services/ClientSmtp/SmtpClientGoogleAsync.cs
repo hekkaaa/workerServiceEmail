@@ -1,4 +1,6 @@
-﻿using MimeKit;
+﻿using MailKit.Net.Smtp;
+using MimeKit;
+using WorkerServiceEmail.EntityMessage;
 
 namespace WorkerServiceEmail.Email.SMTP.Client
 {
@@ -24,6 +26,25 @@ namespace WorkerServiceEmail.Email.SMTP.Client
             catch (Exception ex)
             {
                 return false;
+            }
+        }
+
+        public async Task<OutputStatusSmtp> StatusSmtpConnectAsync()
+        {
+            try
+            {
+                using (var client = new SmtpClient())
+                {
+                    await client.ConnectAsync("smtp.gmail.com", 25, false);
+                    await client.AuthenticateAsync(_login, _password);
+                    await client.DisconnectAsync(true);
+
+                    return new OutputStatusSmtp { SmtpServer = "smtp.gmail.com", Status = true };
+                }
+            }
+            catch (Exception ex)
+            {
+                return new OutputStatusSmtp { SmtpServer = "smtp.gmail.com", Status = false, ErrorMessage = ex.Message };
             }
         }
     }
