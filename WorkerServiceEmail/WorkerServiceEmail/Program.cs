@@ -27,6 +27,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         services.AddSingleton<IStartingSubService, StartingSubService>();
         services.AddSingleton<IRabbitReceiveService, RabbitReceiveService>();
     })
+    .UseWindowsService()
     .Build();
 
 await host.RunAsync();
