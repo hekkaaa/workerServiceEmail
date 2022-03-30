@@ -14,46 +14,55 @@ namespace WorkerServiceEmail
         private readonly IRunner _runner;
         private readonly IEmailService _emailService;
         private readonly IStartingSubService _startingSubService;
-        private readonly IRabbitReceiveService _rabbitReceiveService;
 
 
-        public Worker(ILogger<Worker> logger,
+        public Worker(
             IRunner runner,
             IEmailService emailService,
-            IStartingSubService startingSubService,
-            IRabbitReceiveService rabbitReceiveService)
+            IStartingSubService startingSubService)
         {
             _runner = runner;
             _emailService = emailService;
             _startingSubService = startingSubService;
-            _rabbitReceiveService = rabbitReceiveService;
         }
 
-        public override async Task StartAsync(CancellationToken stoppingToken)
+        //public override async Task StartAsync(CancellationToken stoppingToken)
+        //{
+        //    await CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner);
+
+        //    _runner.WarningAction("Service Email Get Started!");
+
+        //    var startEmailService = _startingSubService.Start();
+
+        //    if (!startEmailService.Result)
+        //    {
+        //        await StopAsync(stoppingToken);
+        //    }
+        //    ExecuteAsync(stoppingToken).Wait();
+        //}
+
+        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             await CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner);
 
             _runner.WarningAction("Service Email Get Started!");
-          
-           var startEmailService = _startingSubService.Start();
-          
+
+            var startEmailService = _startingSubService.Start();
+
             if (!startEmailService.Result)
             {
                 await StopAsync(stoppingToken);
             }
-            ExecuteAsync(stoppingToken).Wait();
-        }
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
+
             while (!stoppingToken.IsCancellationRequested)
             {
-                _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
+                //_runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
 
                 // судя по всему тут будут слушаться RabbitMQ
-                _rabbitReceiveService.Recevie();
 
-                 await Task.Delay(2000, stoppingToken);
+
+                await Task.Delay(2000, stoppingToken);
             }
         }
 

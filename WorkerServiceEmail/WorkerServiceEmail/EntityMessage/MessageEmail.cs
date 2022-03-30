@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WorkerServiceEmail.EntityMessage
 {
-    public class MessageEmail
+    public class MessageEmail : IMessageEmail
     {
         public string? NameFrom { get; set; }
         public string? EmailFrom { get; set; }
