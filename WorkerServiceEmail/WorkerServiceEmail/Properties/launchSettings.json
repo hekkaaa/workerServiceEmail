@@ -9,7 +9,8 @@
         "LOGIN_EMAIL_GMAIL": "dogsitterclub2022@gmail.com",
         "PASSWORD_EMAIL_GMAIL": "devedu2022!",
         "LOGIN_EMAIL_YANDEX": "",
-        "PASSWORD_EMAIL_YANDEX": ""
+        "PASSWORD_EMAIL_YANDEX": "",
+        "ADMIN_MAIL": "silencemyalise@gmail.com"
       }
     }
   }

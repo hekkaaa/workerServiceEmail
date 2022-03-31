@@ -1,6 +1,7 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
 using WorkerServiceEmail.EntityMessage;
+using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Email.SMTP.Client
 {
@@ -8,7 +9,12 @@ namespace WorkerServiceEmail.Email.SMTP.Client
     {
         private string? _login = Environment.GetEnvironmentVariable("LOGIN_EMAIL_GMAIL");
         private string? _password = Environment.GetEnvironmentVariable("PASSWORD_EMAIL_GMAIL");
+        private readonly IRunner _runner;
 
+        public SmtpClientGoogleAsync(IRunner runner)
+        {
+            _runner = runner;
+        }
         public async Task<bool> SendAsync(MimeMessage emailMessage)
         {
             try
@@ -19,12 +25,12 @@ namespace WorkerServiceEmail.Email.SMTP.Client
                     await client.AuthenticateAsync(_login, _password);
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
-
                     return true;
                 }
             }
             catch (Exception ex)
             {
+                _runner.WarningAction($"Error smtp.gmail.com - {ex.Message}. Letter not delivered: {emailMessage.To}");
                 return false;
             }
         }

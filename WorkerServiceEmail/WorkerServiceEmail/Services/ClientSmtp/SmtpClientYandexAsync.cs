@@ -1,6 +1,7 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
 using WorkerServiceEmail.EntityMessage;
+using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Email.SMTP.Client
 {
@@ -8,7 +9,13 @@ namespace WorkerServiceEmail.Email.SMTP.Client
     {
         private string? _login = Environment.GetEnvironmentVariable("LOGIN_EMAIL_YANDEX");
         private string? _password = Environment.GetEnvironmentVariable("PASSWORD_EMAIL_YANDEX");
-    
+        private readonly IRunner _runner;
+
+        public SmtpClientYandexAsync(IRunner runner)
+        {
+            _runner = runner;
+        }
+
         public async Task<bool> SendAsync(MimeMessage emailMessage)
         {
             try
@@ -24,6 +31,7 @@ namespace WorkerServiceEmail.Email.SMTP.Client
             }
             catch (Exception ex)
             {
+                _runner.WarningAction($"Error smtp.gmail.com - {ex.Message}. Letter not delivered: {emailMessage.To}");
                 return false;
             }
         }

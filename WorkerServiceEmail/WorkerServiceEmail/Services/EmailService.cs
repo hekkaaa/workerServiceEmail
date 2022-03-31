@@ -16,26 +16,21 @@ namespace WorkerServiceEmail.Email
         }
         public async Task<bool> SendEmailAsync(MessageEmail message)
         {
-            _runner.InfoAction($"Начало отправки письма: {message.EmailTo}");
 
             MimeMessage emailMessage = new MessageEmail().CollectMessage(message);
 
             var result = await RouteAndSendMessageInSmptClient(emailMessage);
 
-            _runner.WarningAction($"Письмо отправлено {message.EmailTo}");
-
-             return result;
+            return result;
         }
 
         public async Task<bool> SendEmailStatusSubServiceAsync(MessageEmail message, List<OutputStatusSmtp> messageService)
         {
-            _runner.InfoAction($"Начало отправки письма: {message.EmailTo}");
-
             MimeMessage emailMessage = new MessageEmail().CollectMessage(message, messageService);
 
             var result = await RouteAndSendMessageInSmptClient(emailMessage);
 
-            _runner.WarningAction($"Письмо отправлено: {message.EmailTo}");
+            _runner.WarningAction($"System mail successfully sent to: {message.EmailTo}");
 
             return result;
         }
@@ -43,19 +38,22 @@ namespace WorkerServiceEmail.Email
         private async Task<bool> RouteAndSendMessageInSmptClient(MimeMessage emailMessage)
         {
             ContextEmailService context = new ContextEmailService();
-            context.SetClientSmtp(new SmtpClientGoogleAsync());
+            context.SetClientSmtp(new SmtpClientGoogleAsync(_runner));
             Task<bool> res = context.SendMail(emailMessage);
 
             if (!res.Result)
             {
-                context.SetClientSmtp(new SmtpClientYandexAsync());
+                context.SetClientSmtp(new SmtpClientYandexAsync(_runner));
                 res = context.SendMail(emailMessage);
                 if (!res.Result)
                 {
-                    _runner.CriticalAction("Ошибка отправки через все варианты SMTP Client");
+                    res.Dispose();
+                    _runner.CriticalAction("Error all's option SMTP Client");
                     //throw new Exception("Ошибка отправки через все варианты SMTP Client");
                 }
+                res.Dispose();
             }
+            res.Dispose();
             return res.Result;
         }
     }

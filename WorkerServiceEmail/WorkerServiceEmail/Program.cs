@@ -11,7 +11,6 @@ IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
         services.AddHostedService<Worker>();
-
         services.AddMassTransit(x =>
         {
             x.AddConsumer<RecevieInfoConsumer>();
@@ -26,14 +25,20 @@ IHost host = Host.CreateDefaultBuilder(args)
 
                 cfg.ReceiveEndpoint("Email-service-info", e =>
                 {
+                    e.ConcurrentMessageLimit = 6;
+                    e.PrefetchCount = 2;
                     e.ConfigureConsumer<RecevieInfoConsumer>(context);
                 });
+
                 cfg.ReceiveEndpoint("Email-service-error", e =>
                 {
+                    e.ConcurrentMessageLimit = 2;
+                   
                     e.ConfigureConsumer<RecevieErrorConsumer>(context);
                 });
             });
         });
+
 
         var config = new ConfigurationBuilder()
               .SetBasePath(System.IO.Directory.GetCurrentDirectory())
@@ -50,8 +55,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         });
         services.AddSingleton<IEmailService, EmailService>();
         services.AddSingleton<IClientSmtp, SmtpClientGoogleAsync>();
-        services.AddSingleton<IStartingSubService, StartingSubService>();
-      
+        services.AddSingleton<ISubService, SubService>();
     })
     .UseWindowsService()
     .Build();

@@ -1,16 +1,19 @@
 ﻿using WorkerServiceEmail.Email;
 using WorkerServiceEmail.Email.SMTP.Client;
 using WorkerServiceEmail.EntityMessage;
+using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Services
 {
-    public class StartingSubService : IStartingSubService
+    public class SubService : ISubService
     {
         private readonly IEmailService _emailService;
         private readonly IRunner _runner;
+        private string? _mailAdmin = Environment.GetEnvironmentVariable("ADMIN_MAIL");
+      
 
-        public StartingSubService(IEmailService emailService, IRunner runner)
+        public SubService(IEmailService emailService, IRunner runner)
         {
             _emailService = emailService;
             _runner = runner;
@@ -20,10 +23,10 @@ namespace WorkerServiceEmail.Services
             List<OutputStatusSmtp> outputList = new List<OutputStatusSmtp>();
             ContextEmailService item = new ContextEmailService();
 
-            item.SetClientSmtp(new SmtpClientGoogleAsync());
+            item.SetClientSmtp(new SmtpClientGoogleAsync(_runner));
             outputList.Add(await item.StatusConnect());
 
-            item.SetClientSmtp(new SmtpClientYandexAsync());
+            item.SetClientSmtp(new SmtpClientYandexAsync(_runner));
             outputList.Add(await item.StatusConnect());
 
 
@@ -41,11 +44,11 @@ namespace WorkerServiceEmail.Services
             {
                 MessageEmail startMessage = new MessageEmail
                 {
-                    EmailFrom = "dogsitterclub2022@gmail.com",
-                    NameFrom = "Daemon Start Service",
-                    EmailTo = "silencemyalise@gmail.com",
-                    NameTo = "Administrator Service",
-                    Subject = "Service Email Alert!",
+                    EmailFrom = _mailAdmin,
+                    NameFrom = "Daemon Service",
+                    EmailTo = _mailAdmin,
+                    NameTo = "Email Alarm System",
+                    Subject = "Start Service",
                 };
 
                 await _emailService.SendEmailStatusSubServiceAsync(startMessage, outputList);
@@ -59,5 +62,22 @@ namespace WorkerServiceEmail.Services
             }
         }
 
+        public async Task<Task> Stop()
+        {
+            MessageEmail startMessage = new MessageEmail
+            {
+                EmailFrom = _mailAdmin,
+                NameFrom = "Daemon Service",
+                EmailTo = _mailAdmin,
+                NameTo = "Email Alarm System",
+                Subject = "Stop Service ",
+                MessageText = "<b>Service Email from Windows Server</b><br>" +
+            $"<b>IP:</b> {IpAddressHelper.GetIpThisHost()} - Service stopped!"
+            };
+
+            await _emailService.SendEmailAsync(startMessage);
+
+            return Task.CompletedTask;
+        }
     }
 }
