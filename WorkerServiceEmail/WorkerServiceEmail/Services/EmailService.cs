@@ -51,9 +51,7 @@ namespace WorkerServiceEmail.Email
                     _runner.CriticalAction("Error all's option SMTP Client");
                     //throw new Exception("Ошибка отправки через все варианты SMTP Client");
                 }
-                res.Dispose();
             }
-            res.Dispose();
             return res.Result;
         }
     }
