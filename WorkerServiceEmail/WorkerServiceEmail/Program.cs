@@ -16,6 +16,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         {
             x.AddConsumer<RecevieInfoConsumer>();
             x.AddConsumer<RecevieErrorConsumer>();
+            //x.AddDelayedMessageScheduler();
 
             x.UsingRabbitMq((context, cfg) =>
             {
@@ -28,12 +29,22 @@ IHost host = Host.CreateDefaultBuilder(args)
                     hst.Username("guest");
                     hst.Password("guest");
                 });
+              
 
                 cfg.ReceiveEndpoint("Email-service-info", e =>
                 {
-                    e.ConcurrentMessageLimit = 6;
+
+                    //e.UseKillSwitch(options =>
+                    //{
+                    //options.TrackingPeriod = TimeSpan.FromSeconds(30);
+                    //options.SetActivationThreshold(10);
+                    //options.SetTripThreshold(0.15);
+                    //options.SetRestartTimeout(m: 1);
+                    //});
+                    cfg.ConcurrentMessageLimit = 6;
                     e.UseDelayedRedelivery(r => r.Intervals(TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(2)));
                     e.ConfigureConsumer<RecevieInfoConsumer>(context);
+                    
                 });
 
                 cfg.ReceiveEndpoint("Email-service-error", e =>
@@ -62,7 +73,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         });
         services.AddSingleton<IEmailService, EmailService>();
         services.AddSingleton<IClientSmtp, SmtpClientGoogleAsync>();
-        services.AddSingleton<ISubService, CheckingSubEmailService>();
+        services.AddSingleton<ICheckingSubEmailService, CheckingSubEmailService>();
     })
     .UseWindowsService()
     .Build();

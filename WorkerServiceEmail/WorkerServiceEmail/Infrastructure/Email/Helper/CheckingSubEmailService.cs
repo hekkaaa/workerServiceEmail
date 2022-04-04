@@ -6,7 +6,7 @@ using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Services
 {
-    public class CheckingSubEmailService : ISubService
+    public class CheckingSubEmailService : ICheckingSubEmailService
     {
         private readonly IEmailService _emailService;
         private readonly IRunner _runner;
