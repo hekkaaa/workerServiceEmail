@@ -1,5 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MimeKit;
+using System.Net.Sockets;
 using WorkerServiceEmail.EntityMessage;
 using WorkerServiceEmail.Infrastructure.Logging;
 
@@ -16,22 +17,39 @@ namespace WorkerServiceEmail.Email.SMTP.Client
             _runner = runner;
         }
 
-        public async Task<bool> SendAsync(MimeMessage emailMessage)
+        public async Task<bool> SendAsync(MimeMessage message)
         {
+            MimeMessage emailMessage = RebuildEmailFromMessage(message);
+
             try
             {
                 using (var client = new SmtpClient())
                 {
-                    await client.ConnectAsync("smtp.yandex.com", 25, false);
+                    await client.ConnectAsync("smtp.yandex.com", 465, true);
                     await client.AuthenticateAsync(_login, _password);
                     await client.SendAsync(emailMessage);
                     await client.DisconnectAsync(true);
                     return true;
                 }
             }
+            catch (ArgumentNullException ex)
+            {
+                _runner.WarningAction($"Error SMTP.gmail.com ArgumentNullException: Text: {ex.Message}");
+                return false;
+            }
+            catch (MailKit.Security.AuthenticationException ex)
+            {
+                _runner.WarningAction($"Error SMTP.gmail.com Authentication: Text: {ex.Message}");
+                return false;
+            }
+            catch (SocketException ex)
+            {
+                _runner.WarningAction($"Error SMTP.gmail.com: Text: {ex.Message}, ErrorCore: {ex.ErrorCode}");
+                return false;
+            }
             catch (Exception ex)
             {
-                _runner.WarningAction($"Error smtp.gmail.com - {ex.Message}. Letter not delivered: {emailMessage.To}");
+                _runner.WarningAction($"Error SMTP.gmail.com - {ex.Message}. Letter not delivered: {emailMessage.To}");
                 return false;
             }
         }
@@ -42,7 +60,7 @@ namespace WorkerServiceEmail.Email.SMTP.Client
             {
                 using (var client = new SmtpClient())
                 {
-                    await client.ConnectAsync("smtp.yandex.com", 25, false);
+                    await client.ConnectAsync("smtp.yandex.com", 465, true);
                     await client.AuthenticateAsync(_login, _password);
                     await client.DisconnectAsync(true);
 
@@ -53,6 +71,14 @@ namespace WorkerServiceEmail.Email.SMTP.Client
             {
                 return new OutputStatusSmtp { SmtpServer = "smtp.yandex.com", Status = false, ErrorMessage = ex.Message };
             }
+        }
+
+        private MimeMessage RebuildEmailFromMessage(MimeMessage message)
+        {
+            string tmpname = message.From[0].Name;
+            message.From.Remove(message.From.FirstOrDefault());
+            message.From.Add(new MailboxAddress(tmpname, _login));
+            return message;
         }
     }
 }

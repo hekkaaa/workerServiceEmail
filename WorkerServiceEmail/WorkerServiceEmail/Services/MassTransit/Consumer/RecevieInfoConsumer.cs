@@ -16,21 +16,29 @@ namespace WorkerServiceEmail.Services.Consumer
             _runner = runner;
         }
 
-        public Task Consume(ConsumeContext<EmailInfoMessage> context)
-        {   
-            MessageEmail message = new MessageEmail
+        public async Task Consume(ConsumeContext<EmailInfoMessage> context)
+        {
+            try
             {
-                EmailFrom = "help@marvelous.com",
-                NameFrom = "Bank of Marvelous",
-                EmailTo = context.Message.EmailTo,
-                NameTo = context.Message.NameTo,
-                Subject = context.Message.Subject,
-                MessageText = context.Message.TextMessage
-            };
+                MessageEmail message = new MessageEmail
+                {
+                    EmailFrom = "help@marvelous.com",
+                    NameFrom = "Bank of Marvelous",
+                    EmailTo = context.Message.EmailTo,
+                    NameTo = context.Message.NameTo,
+                    Subject = context.Message.Subject,
+                    MessageText = context.Message.TextMessage
 
-            _emailService.SendEmailAsync(message);
-            _runner.InfoAction($"Message sent to client: {context.Message.EmailTo}");
-            return Task.CompletedTask;
+                };
+
+                await _emailService.SendEmailAsync(message);
+                _runner.InfoAction($"Message sent to client: {context.Message.EmailTo}");
+            }
+            catch (Exception ex)
+            {
+                _runner.WarningAction($@"Mail delivery error: ""{context.Message.EmailTo}"". Error: {ex.Message}");
+                throw new Exception();
+            }
         }
     }
 }

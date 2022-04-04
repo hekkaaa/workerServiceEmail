@@ -19,9 +19,15 @@ namespace WorkerServiceEmail.Email
 
             MimeMessage emailMessage = new MessageEmail().CollectMessage(message);
 
-            var result = await RouteAndSendMessageInSmptClient(emailMessage);
-
-            return result;
+            try
+            {
+                await RouteAndSendMessageInSmptClient(emailMessage);
+                return true;
+            }
+            catch(ArgumentException ex)
+            {
+                throw new ArgumentException(ex.Message);
+            }
         }
 
         public async Task<bool> SendEmailStatusSubServiceAsync(MessageEmail message, List<OutputStatusSmtp> messageService)
@@ -47,9 +53,8 @@ namespace WorkerServiceEmail.Email
                 res = context.SendMail(emailMessage);
                 if (!res.Result)
                 {
-                    res.Dispose();
                     _runner.CriticalAction("Error all's option SMTP Client");
-                    //throw new Exception("Ошибка отправки через все варианты SMTP Client");
+                    throw new ArgumentException("Error all's option SMTP Client");
                 }
             }
             return res.Result;

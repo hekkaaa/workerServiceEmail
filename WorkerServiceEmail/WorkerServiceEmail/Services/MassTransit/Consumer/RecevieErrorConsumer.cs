@@ -17,22 +17,29 @@ namespace WorkerServiceEmail.Services.Consumer
             _emailService = emailService;
             _runner = runner;
         }
-        public Task Consume(ConsumeContext<EmailErrorMessage> context)
-        {   
-
-            MessageEmail message = new MessageEmail
+        public async Task Consume(ConsumeContext<EmailErrorMessage> context)
+        {
+            try
             {
-                EmailFrom = "admin@marvelous.com",
-                NameFrom = "Email Alarm System",
-                EmailTo = _emailAdmin,
-                NameTo = "Administrator",
-                Subject = $"Critical! System microservice {context.Message.ServiceName?.ToUpper()} is down!",
-                MessageText = context.Message.TextMessage
-            };
+                MessageEmail message = new MessageEmail
+                {
+                    EmailFrom = "admin@marvelous.com",
+                    NameFrom = "Email Alarm System",
+                    EmailTo = _emailAdmin,
+                    NameTo = "Administrator",
+                    Subject = $"Critical! System microservice {context.Message.ServiceName?.ToUpper()} is down!",
+                    MessageText = context.Message.TextMessage
+                };
 
-            _emailService.SendEmailAsync(message);
-            _runner.CriticalAction($"A letter was sent to the administrator about the fall of the service: {context.Message.ServiceName}");
-            return Task.CompletedTask;
+                await _emailService.SendEmailAsync(message);
+                _runner.CriticalAction($"A letter was sent to the administrator about the fall of the service: {context.Message.ServiceName}");
+            }
+            catch(Exception ex)
+            {
+                _runner.WarningAction($@"Mail delivery error: ""admin@marvelous.com"". Error: {ex.Message}");
+                throw new Exception();
+            }
+           
         }
     }
 }

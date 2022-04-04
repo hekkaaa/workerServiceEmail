@@ -6,14 +6,14 @@ using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Services
 {
-    public class SubService : ISubService
+    public class CheckingSubEmailService : ISubService
     {
         private readonly IEmailService _emailService;
         private readonly IRunner _runner;
         private string? _mailAdmin = Environment.GetEnvironmentVariable("ADMIN_MAIL");
       
 
-        public SubService(IEmailService emailService, IRunner runner)
+        public CheckingSubEmailService(IEmailService emailService, IRunner runner)
         {
             _emailService = emailService;
             _runner = runner;
