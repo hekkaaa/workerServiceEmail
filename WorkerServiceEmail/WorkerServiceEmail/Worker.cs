@@ -21,9 +21,9 @@ namespace WorkerServiceEmail
             _startingSubService = startingSubService;
         }
 
-        public async Task StartAsync(CancellationToken cancellationToken)
+        public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            await CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner);
+            (CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner)).Wait();
 
             _runner.WarningAction("Service Email Get Started!");
 
@@ -31,8 +31,9 @@ namespace WorkerServiceEmail
 
             if (!startEmailService.Result)
             {
-                await StopAsync(cancellationToken);
+                await StopAsync(stoppingToken);
             }
+             ExecuteAsync(stoppingToken);
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -50,8 +51,6 @@ namespace WorkerServiceEmail
             while (!stoppingToken.IsCancellationRequested)
             {
                 _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
-
-                // судя по всему тут будут слушаться RabbitMQ
 
                 await Task.Delay(300000, stoppingToken);
             }
