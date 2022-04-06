@@ -21,18 +21,19 @@ namespace WorkerServiceEmail
             _startingSubService = startingSubService;
         }
 
+
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            (CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner)).Wait();
+            //(CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner)).Wait();
 
-            _runner.WarningAction("Service Email Get Started!");
+            //_runner.WarningAction("Service Email Get Started!");
 
-            var startEmailService = _startingSubService.Start();
+            //var startEmailService = _startingSubService.Start();
 
-            if (!startEmailService.Result)
-            {
-                await StopAsync(stoppingToken);
-            }
+            //if (!startEmailService.Result)
+            //{
+            //    await StopAsync(stoppingToken);
+            //}
              ExecuteAsync(stoppingToken);
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
