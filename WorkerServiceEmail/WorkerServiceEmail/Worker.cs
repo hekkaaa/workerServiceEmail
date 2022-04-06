@@ -37,17 +37,6 @@ namespace WorkerServiceEmail
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            //await CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner);
-
-            //_runner.WarningAction("Service Email Get Started!");
-
-            //var startEmailService = _startingSubService.Start();
-
-            //if (!startEmailService.Result)
-            //{
-            //    await StopAsync(stoppingToken);
-            //}
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
