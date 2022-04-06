@@ -9,6 +9,8 @@ namespace WorkerServiceEmail.Infrastructure
     {
         static IEmailService? _emailService;
         static string? _userDirectory = Environment.GetEnvironmentVariable("LOG_DIRECTORY");
+        static string? _mailTo = Environment.GetEnvironmentVariable("ADMIN_MAIL");
+
         static IRunner _runner;
 
         public static async Task<Task> CheckLogFileForSystem(IEmailService emailService,IRunner runner)
@@ -41,7 +43,7 @@ namespace WorkerServiceEmail.Infrastructure
                 var res = CheckFileLogFromDirectory();
                 if (res)
                 {
-                    _runner.InfoAction("Пути сохранения логов успешно проверены.");
+                    _runner.InfoAction("Log save paths have been successfully verified.");
                     return true;
                 }
             }
@@ -55,9 +57,9 @@ namespace WorkerServiceEmail.Infrastructure
 
                     MessageEmail messageReabase = new MessageEmail
                     {
-                        EmailFrom = "dogsitterclub2022@gmail.com",
+                        EmailFrom = _mailTo,
                         NameFrom = "Daemon Start Service",
-                        EmailTo = "silencemyalise@gmail.com",
+                        EmailTo = _mailTo,
                         NameTo = "Administrator Service",
                         Subject = "Service Email Alert!",
                         MessageText = "<b>Logs are written on the backup path!</b><br>" +
@@ -76,9 +78,9 @@ namespace WorkerServiceEmail.Infrastructure
 
                     MessageEmail message = new MessageEmail
                     {
-                        EmailFrom = "dogsitterclub2022@gmail.com",
+                        EmailFrom = _mailTo,
                         NameFrom = "Daemon Start Service",
-                        EmailTo = "silencemyalise@gmail.com",
+                        EmailTo = _mailTo,
                         NameTo = "Administrator Service",
                         Subject = "Service Email Alert!",
                         MessageText = "<h2><b>Log file existence check error!</b></h2><br>" +
@@ -107,9 +109,9 @@ namespace WorkerServiceEmail.Infrastructure
             {
                 MessageEmail message = new MessageEmail
                 {
-                    EmailFrom = "dogsitterclub2022@gmail.com",
+                    EmailFrom = _mailTo,
                     NameFrom = "Daemon Start Service",
-                    EmailTo = "silencemyalise@gmail.com",
+                    EmailTo = _mailTo,
                     NameTo = "Administrator Service",
                     Subject = "Service Email Alert!",
                     MessageText = "<b>Error creating log file</b><br>" +

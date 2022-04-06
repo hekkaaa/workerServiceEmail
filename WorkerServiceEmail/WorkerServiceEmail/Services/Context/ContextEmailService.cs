@@ -19,7 +19,7 @@ namespace WorkerServiceEmail.Services
 
         public void SetClientSmtp(IClientSmtp clientSmtp)
         {
-            this._clientSmtp = clientSmtp;
+            _clientSmtp = clientSmtp;
         }
 
         public async Task<bool> SendMail(MimeMessage emailMessage)

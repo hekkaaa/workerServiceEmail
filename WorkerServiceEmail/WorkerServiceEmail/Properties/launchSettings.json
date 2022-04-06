@@ -6,10 +6,11 @@
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development",
         "LOG_DIRECTORY": "D:/NewTemp",
-        "LOGIN_EMAIL_GMAIL": "",
-        "PASSWORD_EMAIL_GMAIL": "",
-        "LOGIN_EMAIL_YANDEX": "",
-        "PASSWORD_EMAIL_YANDEX": ""
+        "LOGIN_EMAIL_GMAIL": "dogsitterclub2022@gmail.com",
+        "PASSWORD_EMAIL_GMAIL": "------!",
+        "LOGIN_EMAIL_YANDEX": "Laiserk24SKA@yandex.ru",
+        "PASSWORD_EMAIL_YANDEX": "-----",
+        "ADMIN_MAIL": "silencemyalise@gmail.com"
       }
     }
   }

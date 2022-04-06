@@ -1,8 +1,9 @@
 ﻿
 namespace WorkerServiceEmail.Services
 {
-    public interface IStartingSubService
+    public interface ICheckingSubEmailService
     {
         Task<bool> Start();
+        Task<Task> Stop();
     }
 }
