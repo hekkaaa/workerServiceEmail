@@ -1,5 +1,4 @@
 using MassTransit;
-using MassTransit.Middleware;
 using NLog.Extensions.Logging;
 using WorkerServiceEmail;
 using WorkerServiceEmail.Email;
@@ -28,23 +27,21 @@ IHost host = Host.CreateDefaultBuilder(args)
                         options.TrackingPeriod = TimeSpan.FromSeconds(30);
                         options.SetActivationThreshold(10);
                         options.SetTripThreshold(0.15);
-                        options.SetRestartTimeout(m: 1);
+                        options.SetRestartTimeout(m: 3);
                     });
-                    e.UseDelayedRedelivery(r => r.Intervals(TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(2)));
+                    e.UseDelayedRedelivery(r => r.Intervals(TimeSpan.FromSeconds(40), TimeSpan.FromMinutes(10), TimeSpan.FromMinutes(40)));
                     e.ConfigureConsumer<RecevieInfoConsumer>(context);
                     
                 });
 
                 cfg.ReceiveEndpoint("Email-service-error", e =>
                 {
-                    e.UseDelayedRedelivery(r => r.Intervals(TimeSpan.FromSeconds(20), TimeSpan.FromMinutes(15), TimeSpan.FromMilliseconds(60)));
+                    e.UseDelayedRedelivery(r => r.Intervals(TimeSpan.FromSeconds(20), TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(10)));
                     e.ConfigureConsumer<RecevieErrorConsumer>(context);
                 });
 
             });
         });
-
-       
 
         var config = new ConfigurationBuilder()
               .SetBasePath(System.IO.Directory.GetCurrentDirectory())
@@ -56,7 +53,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         {
             // configure Logging with NLog
             loggingBuilder.ClearProviders();
-            loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+            loggingBuilder.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Information);
             loggingBuilder.AddNLog(config);
         });
         services.AddSingleton<IEmailService, EmailService>();

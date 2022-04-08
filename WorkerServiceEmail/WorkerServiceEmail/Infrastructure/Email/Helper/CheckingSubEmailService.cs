@@ -61,7 +61,6 @@ namespace WorkerServiceEmail.Services
                 return false;
             }
         }
-
         public async Task<Task> Stop()
         {
             MessageEmail startMessage = new MessageEmail
