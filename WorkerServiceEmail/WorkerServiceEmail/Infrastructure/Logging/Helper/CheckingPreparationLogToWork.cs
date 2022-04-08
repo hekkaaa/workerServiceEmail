@@ -130,7 +130,7 @@ namespace WorkerServiceEmail.Infrastructure
 
         private static void ReBasePathFileNlog()
         {   
-            LogManager.LoadConfiguration("nlog_reserve.config");
+            LogManager.LoadConfiguration("Nlog_reserve.config");
         }
 
         private static bool CheckFileLogFromDirectory()
