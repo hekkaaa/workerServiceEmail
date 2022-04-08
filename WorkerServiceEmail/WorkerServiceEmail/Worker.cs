@@ -41,7 +41,7 @@ namespace WorkerServiceEmail
             {
                 _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
 
-                await Task.Delay(300000, stoppingToken);
+                await Task.Delay(600000, stoppingToken);
             }
         }
 

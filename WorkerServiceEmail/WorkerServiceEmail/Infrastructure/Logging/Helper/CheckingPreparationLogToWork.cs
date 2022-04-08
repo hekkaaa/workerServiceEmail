@@ -49,50 +49,24 @@ namespace WorkerServiceEmail.Infrastructure
             }
             catch (Exception ex)
             {
-                try
+                LogManager.DisableLogging();
+
+                MessageEmail messageReabase = new MessageEmail
                 {
-                    ReBasePathFileNlog();
-                    _userDirectory = @"C:\Temp\";
-                    CheckFileLogFromDirectory();
-
-                    MessageEmail messageReabase = new MessageEmail
-                    {
-                        EmailFrom = _mailTo,
-                        NameFrom = "Daemon Start Service",
-                        EmailTo = _mailTo,
-                        NameTo = "Administrator Service",
-                        Subject = "Service Email Alert!",
-                        MessageText = "<b>Logs are written on the backup path!</b><br>" +
-                            $"<b>New folder path:</b> C:\\Temp<br>" +
-                            $"<b>Server:</b> {IpAddressHelper.GetIpThisHost()} <br>" +
-                            $"<b>Exception text:</b> {ex.Message}"
-                    };
-                    _runner.WarningAction($"Проблема пути сохранения логов. Путь {_userDirectory} не доступен");
-                    await _emailService.SendEmailAsync(messageReabase);
-
-                    return true;
-                }
-                catch
-                {
-                    LogManager.DisableLogging();
-
-                    MessageEmail message = new MessageEmail
-                    {
-                        EmailFrom = _mailTo,
-                        NameFrom = "Daemon Start Service",
-                        EmailTo = _mailTo,
-                        NameTo = "Administrator Service",
-                        Subject = "Service Email Alert!",
-                        MessageText = "<h2><b>Log file existence check error!</b></h2><br>" +
-                        "!!!!Logging is completely disabled!!!<br>" +
+                    EmailFrom = _mailTo,
+                    NameFrom = "Daemon Start Service",
+                    EmailTo = _mailTo,
+                    NameTo = "Administrator Service",
+                    Subject = "Service Email Alert!",
+                    MessageText = "<b>Logs are written on the backup path!</b><br>" +
+                        $"<b>New folder path:</b> C:\\Temp<br>" +
                         $"<b>Server:</b> {IpAddressHelper.GetIpThisHost()} <br>" +
-                         $"<b>Exception text:</b> {ex.Message}"
-                    };
+                        $"<b>Exception text:</b> {ex.Message}"
+                };
+                _runner.WarningAction($"Проблема пути сохранения логов по пути {_userDirectory}. Запись логов отключена. Ошибка {ex.Message}");
+                await _emailService.SendEmailAsync(messageReabase);
 
-                    await _emailService.SendEmailAsync(message);
-
-                    return true;
-                }
+                return false;
             }
             return false;
         }
@@ -102,7 +76,7 @@ namespace WorkerServiceEmail.Infrastructure
             // Create log file.
             try
             {
-                File.Create($"{_userDirectory}/EmailServiceLog-{DateTime.Now.ToString("dd-MM-yyyy")}.log").Dispose();
+                File.Create($"{_userDirectory}/EmailServiceLog-{DateTime.Now.ToString("dd-MM-yyyy")}.txt").Dispose();
                 return true;
             }
             catch (Exception ex)
@@ -121,16 +95,11 @@ namespace WorkerServiceEmail.Infrastructure
                     $"<b>Exception text:</b> {ex.Message}"
                 };
 
-                LogManager.DisableLogging();
+                //LogManager.DisableLogging();
                 await _emailService.SendEmailAsync(message);
 
                 return true;
             }
-        }
-
-        private static void ReBasePathFileNlog()
-        {   
-            LogManager.LoadConfiguration("Nlog_reserve.config");
         }
 
         private static bool CheckFileLogFromDirectory()
@@ -138,7 +107,7 @@ namespace WorkerServiceEmail.Infrastructure
             try
             {
                 var currentDate = DateTime.Now.ToString("dd-MM-yyyy");
-                string[] dirs = Directory.GetFiles($@"{_userDirectory}", $"EmailServiceLog-{currentDate}.log");
+                string[] dirs = Directory.GetFiles($@"{_userDirectory}", $"EmailServiceLog-{currentDate}.txt");
 
                 if (dirs.Length > 0)
                 {
