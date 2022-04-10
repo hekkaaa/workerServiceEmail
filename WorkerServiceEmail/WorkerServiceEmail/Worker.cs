@@ -1,4 +1,7 @@
+//using Marvelous.Contracts.Urls;
 using WorkerServiceEmail.Email;
+using Marvelous.Contracts.Endpoints;
+using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 using WorkerServiceEmail.Services;
 
@@ -19,14 +22,32 @@ namespace WorkerServiceEmail
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            _runner.WarningAction("Service Email Get Started!");
+            //_runner.WarningAction("Service Email Get Started!");
 
-            var startEmailService = _startingSubService.Start();
+            //var startEmailService = _startingSubService.Start();
 
-            if (!startEmailService.Result)
+            //if (!startEmailService.Result)
+            //{
+            //    await StopAsync(stoppingToken);
+            //}
+
+
+            AuthToken test = new AuthToken();
+            var rest = await test.SendRequestAsync<string>(@"https://piter-education.ru:6042", $"{AuthEndpoints.ApiAuth}{AuthEndpoints.TokenForMicroservice}");
+            Console.WriteLine("Token: " + rest.Data);
+
+            var alena = await test.SendRequestAsync<IEnumerable<Marvelous.Contracts.ResponseModels.ConfigResponseModel>>(@"https://piter-education.ru:6040", ConfigsEndpoints.Configs, rest.Data);
+            var qr = alena.Data.FirstOrDefault(x => x.Key == "LOGIN_EMAIL_GMAIL");
+        
+            Console.WriteLine(qr.Value);
+            Console.WriteLine("---------------");
+
+            foreach (var t in alena.Data)
             {
-                await StopAsync(stoppingToken);
+                Console.WriteLine(t.Key);
+                Console.WriteLine(t.Value);
             }
+
             ExecuteAsync(stoppingToken);
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
