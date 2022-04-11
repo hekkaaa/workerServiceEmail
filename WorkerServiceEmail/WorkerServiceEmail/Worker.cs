@@ -1,4 +1,6 @@
+//using Marvelous.Contracts.Urls;
 using WorkerServiceEmail.Email;
+using Marvelous.Contracts.Endpoints;
 using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 using WorkerServiceEmail.Services;
@@ -8,23 +10,18 @@ namespace WorkerServiceEmail
     public class Worker : BackgroundService
     {
         private readonly IRunner _runner;
-        private readonly IEmailService _emailService;
         private readonly ICheckingSubEmailService _startingSubService;
 
         public Worker(
             IRunner runner,
-            IEmailService emailService,
             ICheckingSubEmailService startingSubService)
         {
             _runner = runner;
-            _emailService = emailService;
             _startingSubService = startingSubService;
         }
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            (CheckingPreparationLogToWork.CheckLogFileForSystem(_emailService, _runner)).Wait();
-
             _runner.WarningAction("Service Email Get Started!");
 
             var startEmailService = _startingSubService.Start();
@@ -33,7 +30,17 @@ namespace WorkerServiceEmail
             {
                 await StopAsync(stoppingToken);
             }
-             ExecuteAsync(stoppingToken);
+
+            Console.WriteLine("---------------");
+
+            //foreach (var s in RequestSetting._settingApp.Data)
+            //{
+            //    Console.WriteLine(s.Key);
+            //    Console.WriteLine(s.Value);
+            //}
+            //Console.WriteLine("---------------");
+
+            ExecuteAsync(stoppingToken);
         }
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -41,7 +48,9 @@ namespace WorkerServiceEmail
             {
                 _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
 
-                await Task.Delay(300000, stoppingToken);
+                RequestSetting.RequestSettingfromServer();
+
+                await Task.Delay(600000, stoppingToken);
             }
         }
 
