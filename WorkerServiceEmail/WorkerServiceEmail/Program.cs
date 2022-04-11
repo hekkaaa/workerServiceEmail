@@ -3,6 +3,7 @@ using NLog.Extensions.Logging;
 using WorkerServiceEmail;
 using WorkerServiceEmail.Email;
 using WorkerServiceEmail.Email.SMTP.Client;
+using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 using WorkerServiceEmail.Services;
 using WorkerServiceEmail.Services.Consumer;
@@ -10,8 +11,9 @@ using WorkerServiceEmail.Services.Consumer;
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
-        services.AddHostedService<Worker>();
+        RequestSetting.RequestSettingfromServer();
 
+        services.AddHostedService<Worker>();
         services.AddMassTransit(x =>
         {
             x.AddConsumer<RecevieInfoConsumer>();
@@ -31,7 +33,7 @@ IHost host = Host.CreateDefaultBuilder(args)
                     });
                     e.UseDelayedRedelivery(r => r.Intervals(TimeSpan.FromSeconds(40), TimeSpan.FromMinutes(10), TimeSpan.FromMinutes(40)));
                     e.ConfigureConsumer<RecevieInfoConsumer>(context);
-                    
+
                 });
 
                 cfg.ReceiveEndpoint("Email-service-error", e =>

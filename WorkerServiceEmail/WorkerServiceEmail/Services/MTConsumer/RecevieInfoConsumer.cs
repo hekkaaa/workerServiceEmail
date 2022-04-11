@@ -2,6 +2,7 @@
 using MassTransit;
 using WorkerServiceEmail.Email;
 using WorkerServiceEmail.EntityMessage;
+using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Services.Consumer
@@ -10,6 +11,7 @@ namespace WorkerServiceEmail.Services.Consumer
     { 
         private readonly IEmailService _emailService;
         private readonly IRunner _runner;
+        private string? _emailAdmin = RequestSetting.ReturnValueByKey("ADMIN_MAIL");
         public RecevieInfoConsumer(IEmailService emailService, IRunner runner)
         {
             _emailService = emailService;
@@ -22,7 +24,7 @@ namespace WorkerServiceEmail.Services.Consumer
             {
                 MessageEmail message = new MessageEmail
                 {
-                    EmailFrom = "help@marvelous.com",
+                    EmailFrom = _emailAdmin,
                     NameFrom = "Bank of Marvelous",
                     EmailTo = context.Message.EmailTo,
                     NameTo = context.Message.NameTo,

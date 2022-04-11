@@ -22,31 +22,23 @@ namespace WorkerServiceEmail
 
         public override async Task StartAsync(CancellationToken stoppingToken)
         {
-            //_runner.WarningAction("Service Email Get Started!");
+            _runner.WarningAction("Service Email Get Started!");
 
-            //var startEmailService = _startingSubService.Start();
+            var startEmailService = _startingSubService.Start();
 
-            //if (!startEmailService.Result)
-            //{
-            //    await StopAsync(stoppingToken);
-            //}
+            if (!startEmailService.Result)
+            {
+                await StopAsync(stoppingToken);
+            }
 
-
-            AuthToken test = new AuthToken();
-            var rest = await test.SendRequestAsync<string>(@"https://piter-education.ru:6042", $"{AuthEndpoints.ApiAuth}{AuthEndpoints.TokenForMicroservice}");
-            Console.WriteLine("Token: " + rest.Data);
-
-            var alena = await test.SendRequestAsync<IEnumerable<Marvelous.Contracts.ResponseModels.ConfigResponseModel>>(@"https://piter-education.ru:6040", ConfigsEndpoints.Configs, rest.Data);
-            var qr = alena.Data.FirstOrDefault(x => x.Key == "LOGIN_EMAIL_GMAIL");
-        
-            Console.WriteLine(qr.Value);
             Console.WriteLine("---------------");
 
-            foreach (var t in alena.Data)
-            {
-                Console.WriteLine(t.Key);
-                Console.WriteLine(t.Value);
-            }
+            //foreach (var s in RequestSetting._settingApp.Data)
+            //{
+            //    Console.WriteLine(s.Key);
+            //    Console.WriteLine(s.Value);
+            //}
+            //Console.WriteLine("---------------");
 
             ExecuteAsync(stoppingToken);
         }
@@ -55,6 +47,8 @@ namespace WorkerServiceEmail
             while (!stoppingToken.IsCancellationRequested)
             {
                 _runner.InfoAction($"Worker running at: {DateTimeOffset.Now}");
+
+                RequestSetting.RequestSettingfromServer();
 
                 await Task.Delay(600000, stoppingToken);
             }

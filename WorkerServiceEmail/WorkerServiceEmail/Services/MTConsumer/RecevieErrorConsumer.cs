@@ -2,6 +2,7 @@
 using MassTransit;
 using WorkerServiceEmail.Email;
 using WorkerServiceEmail.EntityMessage;
+using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Services.Consumer
@@ -10,7 +11,7 @@ namespace WorkerServiceEmail.Services.Consumer
     {
         private readonly IEmailService _emailService;
         private readonly IRunner _runner;
-        private string? _emailAdmin = Environment.GetEnvironmentVariable("ADMIN_MAIL");
+        private string? _emailAdmin = RequestSetting.ReturnValueByKey("ADMIN_MAIL");
       
         public RecevieErrorConsumer(IEmailService emailService, IRunner runner)
         {
@@ -23,7 +24,7 @@ namespace WorkerServiceEmail.Services.Consumer
             {
                 MessageEmail message = new MessageEmail
                 {
-                    EmailFrom = "admin@marvelous.com",
+                    EmailFrom = _emailAdmin,
                     NameFrom = "Email Alarm System",
                     EmailTo = _emailAdmin,
                     NameTo = "Administrator",
