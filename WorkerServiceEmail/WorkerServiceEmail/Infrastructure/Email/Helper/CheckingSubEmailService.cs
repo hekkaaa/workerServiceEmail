@@ -10,7 +10,7 @@ namespace WorkerServiceEmail.Services
     {
         private readonly IEmailService _emailService;
         private readonly IRunner _runner;
-        private string? _mailAdmin = RequestSetting.ReturnValueByKey("ADMIN_MAIL");
+        private string? _mailAdmin = EntitySettings.AdminMail;
 
         public CheckingSubEmailService(IEmailService emailService, IRunner runner)
         {

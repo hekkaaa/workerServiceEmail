@@ -11,85 +11,81 @@ namespace WorkerServiceEmail.Test
 {
     public class SmtpClientGoogleAsyncTests
     {
-        private IRunner _runner;
-        private IClientSmtp _smtp;
+        private IRunner? _runner;
 
         [SetUp]
         public void Setup()
         {
             var mock = new Mock<ILogger<Runner>>();
             _runner = new Runner(mock.Object);
-           
         }
 
         [Test]
-        public void AuthResponseTokenTest()
+        public async Task SendAsyncTest()
         {
             //given
-            MimeMessage message = CollectMessageTest();
+            EntitySettings.LoginEmailGmail = "dogsitterclub2022@gmail.com";
+            EntitySettings.PasswordEmailGmail = "devedu2022!";
+            var message = CollectMessageTest();
+            var item = new SmtpClientGoogleAsync(_runner);
 
-            var mock = new Mock<IClientSmtp>();
-            mock.Setup(a => a.SendAsync(message)).ReturnsAsync(true);
-            IClientSmtp controller = mock.Object;
+            ////when
+            var result = await item.SendAsync(message);
 
-            //when
-            Task<bool> result = controller.SendAsync(message);
-
-            //then 
-            Assert.IsTrue(result.Result);
-        }
-
-
-        [Test]
-        public void AuthResponseTokenAuthenticationNegativeTest()
-        {
-            //given
-            MimeMessage message = CollectMessageTest();
-            var mock = new Mock<IClientSmtp>();
-            mock.Setup(a => a.SendAsync(message));
-            IClientSmtp controller = mock.Object;
-
-            //when
-            Task<bool> result = controller.SendAsync(message);
-
-            //then 
-            Assert.IsFalse(result.Result);
+            ////then 
+            Assert.AreEqual(true, result);
         }
 
         [Test]
-        public void StatusSmtpConnectAsyncTest()
+        public async Task StatusSmtpConnectAsyncTest()
         {
             //given
-            var mock = new Mock<IClientSmtp>();
-            mock.Setup(a => a.StatusSmtpConnectAsync()).ReturnsAsync(new OutputStatusSmtp { SmtpServer = "smtp.gmail.com", Status = true });
-            IClientSmtp controller = mock.Object;
+            EntitySettings.LoginEmailGmail = "dogsitterclub2022@gmail.com";
+            EntitySettings.PasswordEmailGmail = "devedu2022!";
+            var item = new SmtpClientGoogleAsync(_runner);
+            var expected = new OutputStatusSmtp { SmtpServer = "smtp.gmail.com", Status = true };
 
-            //when
-            var actual = new OutputStatusSmtp { SmtpServer = "smtp.gmail.com", Status = true };
-            var result = controller.StatusSmtpConnectAsync();
+            ////when
+            var actual = await item.StatusSmtpConnectAsync();
 
-            //then 
-            Assert.AreEqual(actual.SmtpServer, result.Result.SmtpServer);
-            Assert.AreEqual(actual.Status, result.Result.Status);
+            ////then 
+            Assert.NotNull(actual);
+            Assert.AreEqual(expected.SmtpServer, actual.SmtpServer);
+            Assert.AreEqual(expected.Status, actual.Status);
         }
 
         [Test]
-        public void StatusSmtpConnectAsyncNegativeTest()
+        public async Task StatusSmtpConnectAsyncExceptionNegativeTest()
         {
             //given
-            var mock = new Mock<IClientSmtp>();
-            mock.Setup(a => a.StatusSmtpConnectAsync());
-            IClientSmtp controller = mock.Object;
+            EntitySettings.LoginEmailGmail = "dogsitterclub2022@gmail.com";
+            EntitySettings.PasswordEmailGmail = "gcpummvb";
+            var item = new SmtpClientGoogleAsync(_runner);
+            var expected = new OutputStatusSmtp { SmtpServer = "smtp.gmail.com", Status = false };
 
-            //when
-            var actual = new OutputStatusSmtp { SmtpServer = "smtp.gmail.com", Status = true };
-            var result = new SmtpClientGoogleAsync(_runner).StatusSmtpConnectAsync();
+            ////when
+            var actual = await item.StatusSmtpConnectAsync();
 
+            ////then 
+            Assert.NotNull(actual);
+            Assert.AreEqual(expected.SmtpServer, actual.SmtpServer);
+            Assert.AreEqual(expected.Status, actual.Status);
+        }
 
-            //then 
-            Assert.NotNull(result.Result);
-            //Assert.AreEqual(actual.SmtpServer, result.Result.SmtpServer);
-            //Assert.AreEqual(actual.Status, result.Result.Status);
+        [Test]
+        public async Task SendAsyncErrorAuthenticationNegativeTest()
+        {
+            //given
+            EntitySettings.LoginEmailGmail = "dogsitterclub2022@gmail.com";
+            EntitySettings.PasswordEmailGmail = "asdasd11s!";
+            var message = CollectMessageTest();
+            var item = new SmtpClientGoogleAsync(_runner);
+
+            ////when
+            var result = await item.SendAsync(message);
+
+            ////then 
+            Assert.IsFalse(result);
         }
 
         private MimeMessage CollectMessageTest()

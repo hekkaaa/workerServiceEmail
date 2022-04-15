@@ -30,5 +30,6 @@ namespace WorkerServiceEmail.Services
         {
             return await _clientSmtp.StatusSmtpConnectAsync();
         }
+
     }
 }
