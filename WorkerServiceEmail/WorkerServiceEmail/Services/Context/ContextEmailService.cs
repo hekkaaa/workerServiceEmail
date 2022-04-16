@@ -8,10 +8,6 @@ namespace WorkerServiceEmail.Services
     {
         private IClientSmtp _clientSmtp;
 
-        public ContextEmailService()
-        {
-        }
-
         public ContextEmailService(IClientSmtp clientSmtp)
         {
             _clientSmtp = clientSmtp;
@@ -30,5 +26,6 @@ namespace WorkerServiceEmail.Services
         {
             return await _clientSmtp.StatusSmtpConnectAsync();
         }
+
     }
 }

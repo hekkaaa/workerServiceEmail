@@ -43,8 +43,7 @@ namespace WorkerServiceEmail.Email
 
         private async Task<bool> RouteAndSendMessageInSmptClient(MimeMessage emailMessage)
         {
-            ContextEmailService context = new ContextEmailService();
-            context.SetClientSmtp(new SmtpClientGoogleAsync(_runner));
+            ContextEmailService context = new ContextEmailService(new SmtpClientGoogleAsync(_runner));
             Task<bool> res = context.SendMail(emailMessage);
 
             if (!res.Result)

@@ -2,15 +2,14 @@
 using MimeKit;
 using System.Net.Sockets;
 using WorkerServiceEmail.EntityMessage;
-using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Email.SMTP.Client
 {
     public class SmtpClientGoogleAsync : IClientSmtp
     {
-        private string _login = RequestSetting.ReturnValueByKey("LOGIN_EMAIL_GMAIL");
-        private string _password = RequestSetting.ReturnValueByKey("PASSWORD_EMAIL_GMAIL");
+        private string? _login = EntitySettings.LoginEmailGmail;
+        private string? _password = EntitySettings.PasswordEmailGmail;
         private readonly IRunner _runner;
 
         public SmtpClientGoogleAsync(IRunner runner)

@@ -2,15 +2,14 @@
 using MimeKit;
 using System.Net.Sockets;
 using WorkerServiceEmail.EntityMessage;
-using WorkerServiceEmail.Infrastructure;
 using WorkerServiceEmail.Infrastructure.Logging;
 
 namespace WorkerServiceEmail.Email.SMTP.Client
 {
     public class SmtpClientYandexAsync : IClientSmtp
     {
-        private string? _login = RequestSetting.ReturnValueByKey("LOGIN_EMAIL_YANDEX");
-        private string? _password = RequestSetting.ReturnValueByKey("PASSWORD_EMAIL_YANDEX");
+        private string? _login = EntitySettings.LoginEmailYandex;
+        private string? _password = EntitySettings.PasswordEmailYandex;
         private readonly IRunner _runner;
 
         public SmtpClientYandexAsync(IRunner runner)

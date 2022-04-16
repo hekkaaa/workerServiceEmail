@@ -10,7 +10,7 @@ namespace WorkerServiceEmail.Services
     {
         private readonly IEmailService _emailService;
         private readonly IRunner _runner;
-        private string? _mailAdmin = RequestSetting.ReturnValueByKey("ADMIN_MAIL");
+        private string? _mailAdmin = EntitySettings.AdminMail;
 
         public CheckingSubEmailService(IEmailService emailService, IRunner runner)
         {
@@ -20,14 +20,12 @@ namespace WorkerServiceEmail.Services
         public async Task<bool> Start()
         {
             List<OutputStatusSmtp> outputList = new List<OutputStatusSmtp>();
-            ContextEmailService item = new ContextEmailService();
+            ContextEmailService contextItemEmail = new ContextEmailService(new SmtpClientGoogleAsync(_runner));
 
-            item.SetClientSmtp(new SmtpClientGoogleAsync(_runner));
-            outputList.Add(await item.StatusConnect());
+            outputList.Add(await contextItemEmail.StatusConnect());
 
-            item.SetClientSmtp(new SmtpClientYandexAsync(_runner));
-            outputList.Add(await item.StatusConnect());
-
+            contextItemEmail.SetClientSmtp(new SmtpClientYandexAsync(_runner));
+            outputList.Add(await contextItemEmail.StatusConnect());
 
             int nowManyServiceRun = 0;
 

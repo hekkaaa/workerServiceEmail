@@ -1,4 +1,3 @@
-//using Marvelous.Contracts.Urls;
 using WorkerServiceEmail.Email;
 using Marvelous.Contracts.Endpoints;
 using WorkerServiceEmail.Infrastructure;
@@ -31,7 +30,7 @@ namespace WorkerServiceEmail
                 await StopAsync(stoppingToken);
             }
 
-            Console.WriteLine("---------------");
+            //Console.WriteLine("---------------");
 
             //foreach (var s in RequestSetting._settingApp.Data)
             //{
