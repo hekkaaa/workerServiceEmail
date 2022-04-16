@@ -17,7 +17,6 @@ namespace WorkerServiceEmail.Infrastructure
             client.Authenticator = new JwtAuthenticator(jwtToken);
             client.AddDefaultHeader(nameof(Microservice), Microservice.MarvelousEmailSender.ToString());
             var response = await client.ExecuteAsync<T>(request);
-            Console.WriteLine(response.GetType());
             //CheckTransactionError(response);
             return response;
         }

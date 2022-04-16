@@ -27,13 +27,13 @@ namespace WorkerServiceEmail.Test
             EntitySettings.LoginEmailGmail = "dogsitterclub2022@gmail.com";
             EntitySettings.PasswordEmailGmail = "devedu2022!";
             var message = CollectMessageTest();
-            var item = new SmtpClientGoogleAsync(_runner);
+            var preItemExpected = new SmtpClientGoogleAsync(_runner);
 
             ////when
-            var result = await item.SendAsync(message);
+            var expected = await preItemExpected.SendAsync(message);
 
             ////then 
-            Assert.AreEqual(true, result);
+            Assert.AreEqual(true, expected);
         }
 
         [Test]
@@ -79,13 +79,13 @@ namespace WorkerServiceEmail.Test
             EntitySettings.LoginEmailGmail = "dogsitterclub2022@gmail.com";
             EntitySettings.PasswordEmailGmail = "asdasd11s!";
             var message = CollectMessageTest();
-            var item = new SmtpClientGoogleAsync(_runner);
+            var preItemExpected = new SmtpClientGoogleAsync(_runner);
 
             ////when
-            var result = await item.SendAsync(message);
+            var expected = await preItemExpected.SendAsync(message);
 
             ////then 
-            Assert.IsFalse(result);
+            Assert.IsFalse(expected);
         }
 
         private MimeMessage CollectMessageTest()

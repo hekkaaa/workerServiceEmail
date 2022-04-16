@@ -20,14 +20,12 @@ namespace WorkerServiceEmail.Services
         public async Task<bool> Start()
         {
             List<OutputStatusSmtp> outputList = new List<OutputStatusSmtp>();
-            ContextEmailService item = new ContextEmailService();
+            ContextEmailService contextItemEmail = new ContextEmailService(new SmtpClientGoogleAsync(_runner));
 
-            item.SetClientSmtp(new SmtpClientGoogleAsync(_runner));
-            outputList.Add(await item.StatusConnect());
+            outputList.Add(await contextItemEmail.StatusConnect());
 
-            item.SetClientSmtp(new SmtpClientYandexAsync(_runner));
-            outputList.Add(await item.StatusConnect());
-
+            contextItemEmail.SetClientSmtp(new SmtpClientYandexAsync(_runner));
+            outputList.Add(await contextItemEmail.StatusConnect());
 
             int nowManyServiceRun = 0;
 
